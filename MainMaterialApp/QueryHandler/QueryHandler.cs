@@ -14,7 +14,7 @@ namespace MainMaterialApp.QueryHandler
 
     class QueryHandler
     {
-        NpgsqlConnection conn = new NpgsqlConnection("Server=192.168.1.108;Port=5432;Database=newerp;User Id=postgres;Password=shibin;");
+        NpgsqlConnection conn = new NpgsqlConnection("Server=192.168.1.108;Port=5432;Database=newerp;User Id=postgres;Password=shbin;");
         NpgsqlCommand comm = new NpgsqlCommand();
 
         public void HandleQuery(string query , string queryType , Action<JArray> method)
