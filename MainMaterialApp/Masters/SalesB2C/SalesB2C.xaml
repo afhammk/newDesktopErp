@@ -267,12 +267,12 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock></TextBlock>
                                     <TextBlock></TextBlock>
-                                    <TextBlock  Text="{Binding Details , UpdateSourceTrigger=PropertyChanged}" Grid.Column="2"></TextBlock>
+                                    <TextBlock  Text="{Binding Details ,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2"></TextBlock>
                                     <TextBlock></TextBlock>
                                     <TextBlock></TextBlock>
-                                    <TextBlock Text="{Binding DiscountDetails , UpdateSourceTrigger=PropertyChanged}" Grid.Column="5" Margin="15 0 0 0"></TextBlock>
+                                    <TextBlock Text="{Binding DiscountDetails ,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="5" Margin="15 0 0 0"></TextBlock>
                                     <TextBlock Text="{Binding CgstDetails ,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="6"  Margin="15 0 0 0"></TextBlock>
-                                    <TextBlock Text="{Binding SgstDetails , UpdateSourceTrigger=PropertyChanged}" Grid.Column="7"  Margin="15 0 0 0"></TextBlock>
+                                    <TextBlock Text="{Binding SgstDetails ,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="7"  Margin="15 0 0 0"></TextBlock>
                                     <TextBlock></TextBlock>
                                     <TextBlock></TextBlock>
                                 </Grid>

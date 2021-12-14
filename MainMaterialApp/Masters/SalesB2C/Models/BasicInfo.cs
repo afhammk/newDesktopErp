@@ -34,7 +34,7 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             set
             {
                 name = value;
-                ValidateName();
+               // ValidateName();
                 OnPropertyRaised("Name");
 
             }
@@ -47,7 +47,7 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             set
             {
                 place = value;
-                ValidateName();
+               // ValidateName();
                 OnPropertyRaised("Place");
 
             }
