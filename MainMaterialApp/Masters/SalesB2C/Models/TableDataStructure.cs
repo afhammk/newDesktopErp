@@ -48,14 +48,14 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
                 OnPropertyChanged("Details");
             }
         }
-
+        private string cgstdetails;
         public string CgstDetails
         {
-            get {
-                if ((Convert.ToDouble(String.IsNullOrWhiteSpace(this.qty) ? 0 : this.qty) * Convert.ToDouble(this.Mrp)) != 0)
-                    return ((Convert.ToDouble(this.qty) * Convert.ToDouble(this.Mrp))*Convert.ToDouble(this.Mrp)/100).ToString();
-                else
-                    return "";
+            get { return cgstdetails; }
+            set
+            {
+                cgstdetails = value;
+                OnPropertyChanged("CgstDetails");
             }
            
         }
@@ -114,11 +114,11 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             {
                 qty = value;          
                 OnPropertyChanged("Qty");
-                OnPropertyChanged("Amount");
-                OnPropertyChanged("CgstDetails");
-                OnPropertyChanged("TotalQuantity");
-                OnPropertyChanged("TotalAmount");
-                OnPropertyChanged("TotalMrp");
+                //OnPropertyChanged("Amount");
+                //OnPropertyChanged("CgstDetails");
+                //OnPropertyChanged("TotalQuantity");
+                //OnPropertyChanged("TotalAmount");
+                //OnPropertyChanged("TotalMrp");
 
             }
         }
@@ -167,17 +167,16 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
         }
 
 
-       
+        private string amount;
         public string Amount
         {
-            get 
+            get { return amount; }
+            set
             {
-                if ((Convert.ToDouble(String.IsNullOrWhiteSpace(this.qty) ? 0 : this.qty) * Convert.ToDouble(this.Mrp)) != 0)
-                    return (Convert.ToDouble(this.qty) * Convert.ToDouble(this.Mrp)).ToString();
-                else
-                    return "";
+                amount = value;
+                OnPropertyChanged("Amount");
             }
-       
+
         }
 
         private string salesman ;

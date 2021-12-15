@@ -20,7 +20,7 @@ namespace MainMaterialApp.QueryHandler
         private static String userId = "postgres";
         private static String password = "shibin";
 
-        NpgsqlConnection conn = new NpgsqlConnection($"Server={server};Port=5432;Database={database};User Id={userId};Password={password};");
+        NpgsqlConnection conn = new NpgsqlConnection($"Server={server};Port=5432;Database={database};User Id={userId};Password={password};CommandTimeout=1");
         NpgsqlCommand comm = new NpgsqlCommand();
 
         public JArray HandleQuery(string query , string queryType )
@@ -36,7 +36,7 @@ namespace MainMaterialApp.QueryHandler
                 NpgsqlDataReader dataReader = comm.ExecuteReader();
 
                   
-                if (queryType == "select")
+                if (queryType == "select" || queryType=="insert")
                 {
 
                     var dataTable = new DataTable();
@@ -60,9 +60,9 @@ namespace MainMaterialApp.QueryHandler
             }
             catch
             {
-                JObject obj = new JObject();
+                //JObject obj = new JObject();
                 JArray jsonData = new JArray();
-                jsonData.Add(obj);
+                //jsonData.Add(obj);
                 return jsonData;
             }
             finally

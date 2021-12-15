@@ -17,133 +17,155 @@ using System.Windows.Shapes;
 
 namespace MainMaterialApp.Masters.SalesB2B
 {
-    /// <summary>
-    /// Interaction logic for SalesB2B.xaml
-    /// </summary>
+
+    
     
     public partial class SalesB2B : UserControl
     {
+        int branchid = 1;
+        int counterid = 1;
+
         QueryHandler.QueryHandler queryHandler = new QueryHandler.QueryHandler();
         ManualValidationHandler.ManualValidationHandler err = new ManualValidationHandler.ManualValidationHandler();
-
         ObservableCollection<Models.TableDataStructure> datagriditems = new ObservableCollection<Models.TableDataStructure>();
-        ObservableCollection<Models.SalesmanOptionsDataStructure> salesmanOptions = new ObservableCollection<Models.SalesmanOptionsDataStructure>();
-
+        ObservableCollection<Models.SalesmanOptionsDataStructure> salesmanOptions = new ObservableCollection<Models.SalesmanOptionsDataStructure>();  
+        ObservableCollection<Models.PartyModel> partiesOptions = new ObservableCollection<Models.PartyModel>();
+        Models.TableTotal totals = new Models.TableTotal();
+        Models.BasicInfo basicinfo = new Models.BasicInfo();
 
 
         public SalesB2B()
         {
             InitializeComponent();
+
             B2BDatagrid.ItemsSource = datagriditems;
-           
+            TotalsGrid.DataContext = totals;
+            PartySelectbox.ItemsSource = partiesOptions;
+
+            PartySelectbox.DataContext = basicinfo;
+
+            var invoiceNoResponse = queryHandler.HandleQuery("SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1", "select");
+
+            if(invoiceNoResponse.HasValues)
+                InvoiceNoNumericField.Value = Convert.ToDouble(invoiceNoResponse[0]["invno"].ToString());
             
-            salesmanOptions.Add(new Models.SalesmanOptionsDataStructure() { id = "1", name = "Afham" });
-            salesmanOptions.Add(new Models.SalesmanOptionsDataStructure() { id = "2", name = "sanooj" });
-      
+            var response = queryHandler.HandleQuery("SELECT id,name,stateid FROM public.suppliers WHERE deletedat IS NULL", "select");
 
+            if (response.HasValues)
+            {
+                foreach (var item in response)
+                {
+                    partiesOptions.Add(new Models.PartyModel() { Id = item["id"].ToString(), Name = item["name"].ToString(), StateId = item["stateid"].ToString() });
+
+                }
+            }
+            
             datagriditems.Add(new Models.TableDataStructure());
-            datagriditems[0].SalesmanOptions = salesmanOptions;
-            datagriditems[0].Amount = "23";
-
-
-
-            //LoadingGrid.Content = new Loading();
-
-            ///*------------------dummy data ---------------*/
-            //for (int i = 0; i < 3; i++)
-            //{
-            //    datagriditems.Add(new Models.TableDataStructure()
-            //    {
-            //        Amount = "12",
-            //        Barcode = "3223",
-            //        Cgst = "3232",
-            //        CgstDetails = "2332",
-            //        Salesman = "ansar mon",
-            //        Sgst = "2121",
-            //        SgstDetails = "3434",
-            //        Details = "Shirt Details",
-            //        Discount = "132",
-            //        Id = "23",
-            //        DiscountDetails = "422",
-            //        Item = "Shirt",
-            //        Mrp = "232",
-            //        No = "32",
-            //        Qty = "4343"
-
-            //    });
-            //}
-
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
-        {
-          
-            //queryHandler.HandleQuery("INSERT NTO public.\"BarcodeItems\"(\"Barcode\", \"Item\", \"Mrp\", \"Discount\", \"Cgst\", \"Sgst\", \"Amount\") VALUES (10021,'banyan', 33, 23, 43, 34, 45)","insert");
-
-        }
 
         private void B2BDatagrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            
-            //if (e.Column.Header.ToString() == "Barcode")
-            //{
-            //    var editedTextbox = e.EditingElement as TextBox;
-            //    var editedText = editedTextbox.Text;
+            var row = datagriditems[e.Row.GetIndex()];
+            if (e.Column.Header.ToString() == "Barcode")
+            {
+                var editedTextbox = e.EditingElement as TextBox;
+                var editedText = editedTextbox.Text;
 
-            //    Mouse.OverrideCursor = Cursors.Wait;
-            //    var res = queryHandler.HandleQuery($"select * from public.\"BarcodeItems\" where barcode='{editedText}'","select");
-            //    Mouse.OverrideCursor = null;
-            //    if (res.HasValues)
-            //    {
+                Mouse.OverrideCursor = Cursors.Wait;
+                var res = queryHandler.HandleQuery($"SELECT pd.barcode,pd.itemid,pd.variantid,pd.mrp,pd.cost as price,i.hsn,CONCAT(i.name,' ',iv.name) as item, CASE WHEN td.cgstrate IS NULL THEN 0 ELSE td.cgstrate END, CASE WHEN td.sgstrate IS NULL THEN 0 ELSE td.sgstrate END, CASE WHEN td.igstrate IS NULL THEN 0 ELSE td.igstrate END FROM public.purchaseitemdetails pd LEFT JOIN items i ON pd.itemid = i.id LEFT JOIN itemvariants iv ON pd.variantid = iv.id LEFT JOIN taxes t ON i.taxid = t.id LEFT JOIN taxdetails td ON t.id = td.taxid AND td.type= 'E' AND (pd.mrp between td.ratefrom AND td.rateto ) WHERE pd.barcode='C98562' ", "select");
+                Mouse.OverrideCursor = null;
+                
+                if (res.HasValues)
+                {
 
-            //        datagriditems[e.Row.GetIndex()].ItemName = res[0]["item"].ToString();
-            //        datagriditems[e.Row.GetIndex()].Barcode = res[0]["barcode"].ToString();
-            //        datagriditems[e.Row.GetIndex()].HSN = res[0]["hsn"].ToString();
-            //        datagriditems[e.Row.GetIndex()].Mrp = res[0]["mrp"].ToString();
-            //        datagriditems[e.Row.GetIndex()].Discount = res[0]["discount"].ToString();
-            //        datagriditems[e.Row.GetIndex()].Cgst = res[0]["cgst"].ToString();
-            //        datagriditems[e.Row.GetIndex()].Sgst = res[0]["sgst"].ToString();
-            //        datagriditems[e.Row.GetIndex()].Amount = res[0]["amount"].ToString();
+                   row.ItemName = res[0]["item"].ToString();
+                   row.Barcode = res[0]["barcode"].ToString();
+                   row.ItemId = res[0]["itemid"].ToString();
+                   row.VariantId = res[0]["variantid"].ToString();
+                   row.HSN = String.IsNullOrEmpty(res[0]["hsn"].ToString()) ? "0" : res[0]["hsn"].ToString();
+                   row.Mrp = String.IsNullOrEmpty(res[0]["mrp"].ToString()) ? "0" : res[0]["mrp"].ToString();
+                   row.Price = String.IsNullOrEmpty(res[0]["price"].ToString()) ? "0" : res[0]["price"].ToString();
+                   row.Cgst = "0";
+                   row.Sgst = "0";
+                   row.Igst = "0";
+                   row.CgstDetails = res[0]["cgstrate"].ToString();
+                   row.SgstDetails = res[0]["sgstrate"].ToString();
+                   row.IgstDetails = res[0]["igstrate"].ToString();
+                    //datagriditems[e.Row.GetIndex()].Amount = res[0]["amount"].ToString();
 
 
-            //        B2BDatagrid.CurrentCell = new DataGridCellInfo(B2BDatagrid.Items[e.Row.GetIndex()], B2BDatagrid.Columns[4]);
-            //        B2BDatagrid.BeginEdit();
-            //        editedTextbox.Text = editedTextbox.Text;
+                    B2BDatagrid.CurrentCell = new DataGridCellInfo(B2BDatagrid.Items[e.Row.GetIndex()], B2BDatagrid.Columns[4]);
+                    B2BDatagrid.BeginEdit();
+                    editedTextbox.Text = editedTextbox.Text;
 
-            //        if (datagriditems.Count == e.Row.GetIndex() + 1)
-            //        {
-            //            datagriditems.Add(new Models.TableDataStructure());
-            //        }
-            //    }
-            //    else
-            //    {
+                    if (datagriditems.Count == e.Row.GetIndex() + 1)
+                    {
+                        datagriditems.Add(new Models.TableDataStructure());
+                    }
+                }
+                else
+                {
 
-            //        e.Cancel = true;
+                    e.Cancel = true;
+                    err.Trigger(editedTextbox, "Barcode not found");
+                }
 
-            //        err.Trigger(editedTextbox , "Barcode not found");
-            //    }
+            }
+            else if (e.Column.Header.ToString() == "Qty")
+            {
+                var editedTextbox = e.EditingElement as TextBox;
+                var editedText = editedTextbox.Text;
+                if (string.IsNullOrWhiteSpace(editedText) || string.IsNullOrEmpty(datagriditems[e.Row.GetIndex()].Barcode))
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    row.Cgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.CgstDetails) / 100)),2).ToString(); 
+                    row.Sgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.SgstDetails) / 100)),2).ToString(); 
+                    row.Igst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.IgstDetails) / 100)),2).ToString(); 
+                    row.Amount = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) + Convert.ToDouble(row.Cgst) + Convert.ToDouble(row.Sgst)),2).ToString();
+                    CalculateTotals();
+                    B2BDatagrid.CurrentCell = new DataGridCellInfo(B2BDatagrid.Items[e.Row.GetIndex()+1], B2BDatagrid.Columns[1]);
+                    B2BDatagrid.BeginEdit();
+                    //editedTextbox.Text = editedTextbox.Text;
 
-            //}
-            //else if (e.Column.Header.ToString() == "Qty")
-            //{
-            //    var editedTextbox = e.EditingElement as TextBox;
-            //    var editedText = editedTextbox.Text;
-            //    if (string.IsNullOrWhiteSpace(editedText) || string.IsNullOrEmpty(datagriditems[e.Row.GetIndex()].Barcode))
-            //    {
-            //        e.Cancel = true;
-            //    }
-            //    else
-            //    {
-                    
-            //        B2BDatagrid.CurrentCell = new DataGridCellInfo(B2BDatagrid.Items[e.Row.GetIndex()], B2BDatagrid.Columns[9]);
-            //        B2BDatagrid.BeginEdit();
-            //        //editedTextbox.Text = editedTextbox.Text;
+                }
 
-            //    }
+            }
 
-            //}
- 
         }
+
+        public void CalculateTotals()
+        {
+            double totalquantity = 0;
+            double totalmrp = 0;
+            double totalhsn = 0;
+            double totalcgst = 0;
+            double totalsgst = 0;
+            double totalamount = 0;
+            double totalprice = 0;
+            foreach (var items in datagriditems)
+            {
+                totalquantity += Convert.ToDouble(string.IsNullOrEmpty(items.Qty) ? 0 : items.Qty);
+                totalmrp += Convert.ToDouble(string.IsNullOrEmpty(items.Mrp) ? 0 : items.Mrp);
+                totalprice += Convert.ToDouble(string.IsNullOrEmpty(items.Price) ? 0 : items.Price);
+                totalhsn += Convert.ToDouble(string.IsNullOrEmpty(items.HSN) ? 0 : items.HSN);
+                totalcgst += Convert.ToDouble(string.IsNullOrEmpty(items.Cgst) ? 0 : items.Cgst);
+                totalsgst += Convert.ToDouble(string.IsNullOrEmpty(items.Sgst) ? 0 : items.Sgst);
+                totalamount += Convert.ToDouble(string.IsNullOrEmpty(items.Amount) ? 0 : items.Amount);
+
+            }
+            totals.TotalQuantity = totalquantity.ToString();
+            totals.TotalMrp = totalmrp.ToString();
+            totals.TotalHsn = totalhsn.ToString();
+            totals.TotalPrice = totalprice.ToString();
+            totals.TotalCgst = totalcgst.ToString();
+            totals.TotalSgst = totalsgst.ToString();
+            totals.TotalAmount = totalamount.ToString();
+        }
+
 
         private void B2BDatagrid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
@@ -202,7 +224,22 @@ namespace MainMaterialApp.Masters.SalesB2B
             B2BDatagrid.CommitEdit();
         }
 
-       
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            if (basicinfo.PartySelected == null)
+            {
+                basicinfo.PartySelected = null;
+                return;
+            }
+            MessageBox.Show("go ahead");
+            //var partyid = PartySelectbox.SelectedItem as Models.PartyModel;
+            //var res = queryHandler.HandleQuery($"INSERT INTO public.salesinvoices( invoiceno, invoicedate, partyid, invoicetype, netamount, branchid, counterid) VALUES((SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1), '2022-01-01', '{partyid}', 'BB', '{totals.Amount}', '{branchid}', '{counterid}') RETURNING id;", "insert");
+            //if (res.HasValues == true)
+            //    MessageBox.Show("success");
+        }
+
+      
+
     }
 
 }

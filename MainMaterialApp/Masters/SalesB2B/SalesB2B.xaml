@@ -76,7 +76,7 @@
                         
                     </syncfusion:UpDown>
                 </Grid>
-                <DatePicker   Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Margin="0 3 5 0"  Padding="3" Style="{StaticResource MaterialDesignOutlinedDatePicker}"></DatePicker>
+                <DatePicker  Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Margin="0 3 5 0"  Padding="3" Style="{StaticResource MaterialDesignOutlinedDatePicker}"></DatePicker>
 
                 <Button Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100"  materialDesign:ButtonAssist.CornerRadius="15"  Style="{StaticResource MaterialDesignOutlinedDarkButton}" Foreground="{DynamicResource PrimaryHueMidBrush}" >
                     <Button.Content >
@@ -89,14 +89,13 @@
 
 
 
-                <ComboBox Padding="10 7" Margin="0 0 3 0" Height="35" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2" VerticalAlignment="Top"  x:Name="Party" Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Party" >
+                <ComboBox x:Name="PartySelectbox" SelectedItem="{Binding Path=PartySelected , Mode=TwoWay , UpdateSourceTrigger=PropertyChanged , ValidatesOnDataErrors=True}"  Padding="10 7" Margin="0 0 3 0" Height="35" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2" VerticalAlignment="Top"  Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Party" >
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay , ValidatesOnExceptions=True}"></TextBlock>
+                            <TextBlock Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay , ValidatesOnExceptions=True}"></TextBlock>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                
 
 
             </Grid>
@@ -119,14 +118,14 @@
                         <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Barcode" Binding= "{Binding Path=Barcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged , ValidatesOnDataErrors=True}"   >
                         </materialDesign:DataGridTextColumn>
                         <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Item" Binding= "{Binding Path=ItemName, Mode=TwoWay ,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-                        <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="HSN" Binding= "{Binding Path=Amount, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                        <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="HSN" Binding= "{Binding Path=HSN, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                         <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Qty" Binding= "{Binding Path=Qty, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" IsReadOnly="False"/>
                         <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Mrp" Binding= "{Binding Path=Mrp, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-                        <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Price" Binding= "{Binding Path=Discount, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                        <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Price" Binding= "{Binding Path=Price, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                         <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Cgst" Binding= "{Binding Path=Cgst, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                         <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Sgst" Binding= "{Binding Path=Sgst, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                         <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Amount" Binding= "{Binding Path=Amount, Mode=OneWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-                        <materialDesign:DataGridComboBoxColumn HeaderStyle="{StaticResource Hdr}" Width="*" DisplayMemberPath="Name" Header="Salesman" SelectedItemBinding="{Binding Salesman}">
+                        <!--<materialDesign:DataGridComboBoxColumn HeaderStyle="{StaticResource Hdr}" Width="*" DisplayMemberPath="Name" Header="Salesman" SelectedItemBinding="{Binding Salesman}">
                             <materialDesign:DataGridComboBoxColumn.ElementStyle>
                                 <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MaterialDesignComboBox}">
                                     <Setter Property="ItemsSource" Value="{Binding SalesmanOptions}" />
@@ -137,7 +136,7 @@
                                     <Setter Property="ItemsSource" Value="{Binding SalesmanOptions}" />
                                 </Style>
                             </materialDesign:DataGridComboBoxColumn.EditingElementStyle>
-                        </materialDesign:DataGridComboBoxColumn>
+                        </materialDesign:DataGridComboBoxColumn>-->
                     </DataGrid.Columns>
                     <DataGrid.RowDetailsTemplate  >
                         <DataTemplate>
@@ -155,13 +154,13 @@
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding Details}" Grid.Column="2" Margin="15 0"></TextBlock>
-                                <TextBlock Text="{Binding Cgst}" Grid.Column="7"  Margin="15 0"></TextBlock>
-                                <TextBlock Text="{Binding Sgst}" Grid.Column="8"  Margin="15 0"></TextBlock>
+                                <TextBlock Text="{Binding CgstDetails}" Grid.Column="7"  Margin="15 0"></TextBlock>
+                                <TextBlock Text="{Binding SgstDetails}" Grid.Column="8"  Margin="15 0"></TextBlock>
                             </Grid>
                         </DataTemplate>
                     </DataGrid.RowDetailsTemplate>
                 </DataGrid>
-                <Grid Grid.Row="2" Height="25"  Background="LightGray"  VerticalAlignment="Top"  >
+                <Grid Grid.Row="2" Height="25"  Background="LightGray"  VerticalAlignment="Top" x:Name="TotalsGrid"  >
                     <Grid.RowDefinitions>
                         <RowDefinition  ></RowDefinition>
 
@@ -186,14 +185,14 @@
                     <TextBlock Margin="15 0"  FontWeight="Bold" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center" Background="lightgray"/>
                     <TextBlock Margin="15 0"  FontWeight="Bold" Grid.Row="0" Grid.Column="0"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center" Background="lightgray"/>
 
-                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalQuantityTextBox" Grid.Row="0" Grid.Column="3" Text="332.33"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center" Background="lightgray"/>
-                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalMrpTextBox" Grid.Row="0" Grid.Column="4" Text="233.33"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
-                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalDiscountTextBox" Grid.Row="0" Grid.Column="5" Text="23,22"  HorizontalAlignment="Stretch"  TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
-                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalCgstTextBox" Grid.Row="0" Grid.Column="6" Text="232.23"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
-                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalSgstTextBox" Grid.Row="0" Grid.Column="7" Text="23.23"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
-                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalAmountTextBox" Grid.Row="0" Grid.Column="8" Text="32.23" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
-                    <TextBlock Margin="15 0"   FontWeight="Bold" Grid.Row="0" Grid.Column="9"  HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
-                    <TextBlock  Margin="15 0"  FontWeight="Bold" Grid.Row="0" Grid.Column="10" Text="32.23"  HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
+                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalHsn" Grid.Row="0" Grid.Column="3" Text="{Binding Path=TotalHsn}"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center" Background="lightgray"/>
+                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalQty" Grid.Row="0" Grid.Column="4" Text="{Binding Path=TotalQuantity}"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
+                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalMrp" Grid.Row="0" Grid.Column="5" Text="{Binding Path=TotalMrp}"  HorizontalAlignment="Stretch"  TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
+                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalPrice" Grid.Row="0" Grid.Column="6" Text="{Binding Path=TotalPrice}"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
+                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalCgst" Grid.Row="0" Grid.Column="7" Text="{Binding Path=TotalCgst}"  HorizontalAlignment="Stretch"   TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
+                    <TextBlock Margin="15 0"  FontWeight="Bold" x:Name="TotalSgst" Grid.Row="0" Grid.Column="8" Text="{Binding Path=TotalSgst}" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
+                    <TextBlock Margin="15 0"   FontWeight="Bold"  Grid.Row="0" Grid.Column="9" Text="43"  HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
+                    <TextBlock  Margin="15 0"  FontWeight="Bold" x:Name="TotalAmount" Grid.Row="0" Grid.Column="10"  Text="{Binding Path=TotalAmount}"  HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center"  Background="lightgray"/>
 
 
                 </Grid>
@@ -213,7 +212,7 @@
                 </Grid.ColumnDefinitions>
 
 
-                <Button x:Name="Save" Content="SAVE"  VerticalAlignment="Bottom" Margin="0 0 5 3"  Height="60"   Grid.Column="0" Grid.Row="1" Grid.RowSpan="2"  materialDesign:ShadowAssist.ShadowDepth="Depth3"  materialDesign:ButtonAssist.CornerRadius="5"  >
+                <Button x:Name="Save" Content="SAVE" Click="Save_Click"  VerticalAlignment="Bottom" Margin="0 0 5 3"  Height="60"   Grid.Column="0" Grid.Row="1" Grid.RowSpan="2"  materialDesign:ShadowAssist.ShadowDepth="Depth3"  materialDesign:ButtonAssist.CornerRadius="5"  >
                 </Button>
                
                 <!--<ContentControl Grid.Row="1" Grid.Column="3" x:Name="LoadingGrid" Content="{Binding}" />-->

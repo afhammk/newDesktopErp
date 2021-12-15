@@ -97,7 +97,7 @@ namespace MainMaterialApp.Masters.SalesB2C
                 var editedText = editedTextbox.Text;
 
                
-                var res = queryHandler.HandleQuery($"SELECT pd.barcode,pd.variantid,pd.mrp,CONCAT(i.name,' ',iv.name) as item, CASE WHEN td.cgstrate IS NULL THEN 0 ELSE td.cgstrate END, CASE WHEN td.sgstrate IS NULL THEN 0 ELSE td.sgstrate END FROM public.purchaseitemdetails pd LEFT JOIN items i ON pd.itemid = i.id LEFT JOIN itemvariants iv ON pd.variantid = iv.id LEFT JOIN taxes t ON i.taxid = t.id LEFT JOIN taxdetails td ON t.id = td.taxid AND td.type= 'I' AND (pd.mrp between td.ratefrom AND td.rateto ) WHERE pd.barcode='C98562'", "select");
+                var res = queryHandler.HandleQuery($"SELECT pd.barcode,pd.itemid,pd.variantid,pd.mrp,CONCAT(i.name,' ',iv.name) as item, CASE WHEN td.cgstrate IS NULL THEN 0 ELSE td.cgstrate END, CASE WHEN td.sgstrate IS NULL THEN 0 ELSE td.sgstrate END FROM public.purchaseitemdetails pd LEFT JOIN items i ON pd.itemid = i.id LEFT JOIN itemvariants iv ON pd.variantid = iv.id LEFT JOIN taxes t ON i.taxid = t.id LEFT JOIN taxdetails td ON t.id = td.taxid AND td.type= 'E' AND (pd.mrp between td.ratefrom AND td.rateto ) WHERE pd.barcode='{editedText}'", "select");
                
            
 
@@ -107,13 +107,14 @@ namespace MainMaterialApp.Masters.SalesB2C
                         datagriditems[e.Row.GetIndex()].ItemName = res[0]["item"].ToString();
                         datagriditems[e.Row.GetIndex()].Barcode = res[0]["barcode"].ToString();
                         datagriditems[e.Row.GetIndex()].Mrp = res[0]["mrp"].ToString();
-                        //datagriditems[e.Row.GetIndex()].Discount = res[0]["discount"].ToString();
-                        datagriditems[e.Row.GetIndex()].Cgst = res[0]["cgstrate"].ToString();
-                        datagriditems[e.Row.GetIndex()].Sgst = res[0]["sgstrate"].ToString();
-                        //datagriditems[e.Row.GetIndex()].Details = res[0]["item"].ToString();
-                        //datagriditems[e.Row.GetIndex()].SgstDetails = res[0]["sgst"].ToString();
-                        //datagriditems[e.Row.GetIndex()].DiscountDetails = res[0]["discount"].ToString();
-                        //datagriditems[e.Row.GetIndex()].Salesman = "shameel";
+                        datagriditems[e.Row.GetIndex()].Discount = "0";
+                        datagriditems[e.Row.GetIndex()].Cgst = "0";
+                        datagriditems[e.Row.GetIndex()].Sgst = "0";
+                        datagriditems[e.Row.GetIndex()].Details = "";
+                        datagriditems[e.Row.GetIndex()].CgstDetails = res[0]["cgstrate"].ToString();
+                        datagriditems[e.Row.GetIndex()].SgstDetails = res[0]["sgstrate"].ToString();
+                        datagriditems[e.Row.GetIndex()].DiscountDetails = "0";
+                        datagriditems[e.Row.GetIndex()].Salesman = "";
 
                         CalculateTotals();
 
@@ -130,33 +131,37 @@ namespace MainMaterialApp.Masters.SalesB2C
                         InsideDatagrid.BeginEdit();
                         editedTextbox.Text = editedTextbox.Text;
 
-                        //InsideDatagrid.BeginEdit();
-                        //var row = (DataGridRow)InsideDatagrid.ItemContainerGenerator.ContainerFromItem(InsideDatagrid.CurrentItem);
-                        //var txt = InsideDatagrid.Columns[1].GetCellContent(row) as TextBox;
-                        //err.Trigger(txt, "Invalid Barcode");
+                        InsideDatagrid.BeginEdit();
+                        var row = (DataGridRow)InsideDatagrid.ItemContainerGenerator.ContainerFromItem(InsideDatagrid.CurrentItem);
+                        var txt = InsideDatagrid.Columns[1].GetCellContent(row) as TextBox;
+                        err.Trigger(txt, "Invalid Barcode");
                     }
                
             }
-            //else if (e.Column.Header.ToString() == "Qty")
-            //{
-            //    var editedTextbox = e.EditingElement as TextBox;
-            //    var editedText = editedTextbox.Text;
-            //    if (string.IsNullOrWhiteSpace(editedText) || string.IsNullOrEmpty(datagriditems[e.Row.GetIndex()].Barcode))
-            //    {
-            //        e.Cancel = true;
-            //    }
-            //    else
-            //    {
-            //        if (datagriditems.Count == e.Row.GetIndex() + 1)
-            //        {
-            //            datagriditems.Add(new Models.TableDataStructure());
-            //        }
-            //        CalculateTotals();
-            //        InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[e.Row.GetIndex()], InsideDatagrid.Columns[9]);
-            //        InsideDatagrid.BeginEdit();
-            //    }
+            else if (e.Column.Header.ToString() == "Qty")
+            {
+                datagriditems[e.Row.GetIndex()].Amount = "65";
+                datagriditems[e.Row.GetIndex()].CgstDetails = "55";
+                datagriditems[e.Row.GetIndex()].SgstDetails = "45";
 
-            //}
+                //var editedTextbox = e.EditingElement as TextBox;
+                //var editedText = editedTextbox.Text;
+                //if (string.IsNullOrWhiteSpace(editedText) || string.IsNullOrEmpty(datagriditems[e.Row.GetIndex()].Barcode))
+                //{
+                //    e.Cancel = true;
+                //}
+                //else
+                //{
+                //    if (datagriditems.Count == e.Row.GetIndex() + 1)
+                //    {
+                //        datagriditems.Add(new Models.TableDataStructure());
+                //    }
+                //    CalculateTotals();
+                //    InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[e.Row.GetIndex()], InsideDatagrid.Columns[9]);
+                //    InsideDatagrid.BeginEdit();
+                //}
+
+            }
             //else if (e.Column.Header.ToString() == "Salesman")
             //{
             //    //InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[datagriditems.Count - 1], InsideDatagrid.Columns[1]);

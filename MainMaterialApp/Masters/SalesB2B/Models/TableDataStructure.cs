@@ -10,16 +10,26 @@ using System.Windows;
 
 namespace MainMaterialApp.Masters.SalesB2B.Models
 {
-    class TableDataStructure : INotifyPropertyChanged , IDataErrorInfo
+    public class TableDataStructure : INotifyPropertyChanged , IDataErrorInfo
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private string id { get; set; }
-        public string Id
+        private string itemid { get; set; }
+        public string ItemId
         {
-            get { return id; }
+            get { return itemid; }
             set
             {
-                id = value;
+                itemid = value;
+                OnPropertyChanged();
+            }
+        }
+        private string variantid { get; set; }
+        public string VariantId
+        {
+            get { return variantid; }
+            set
+            {
+                variantid = value;
                 OnPropertyChanged();
             }
         }
@@ -42,7 +52,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             set
             {
                 details = value;
-                OnPropertyChanged();
+                OnPropertyChanged("Details");
             }
         }
 
@@ -53,7 +63,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             set
             {
                 cgstdetails = value;
-                OnPropertyChanged();
+                OnPropertyChanged("CgstDetails");
             }
         }
 
@@ -64,7 +74,18 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             set
             {
                 sgstdetails = value;
-                OnPropertyChanged();
+                OnPropertyChanged("SgstDetails");
+            }
+        }
+
+        private string igstdetails;
+        public string IgstDetails
+        {
+            get { return igstdetails; }
+            set
+            {
+                igstdetails = value;
+                OnPropertyChanged("IgstDetails");
             }
         }
 
@@ -75,7 +96,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             set
             {
                 discountdetails = value;
-                OnPropertyChanged();
+                OnPropertyChanged("DiscountDetails");
             }
         }
         private string barcode;
@@ -86,7 +107,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             {
                 barcode = value;
              
-                OnPropertyChanged();
+                OnPropertyChanged("Barcode");
             }
         }
 
@@ -98,18 +119,18 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             {
                 hsn = value;
 
-                OnPropertyChanged();
+                OnPropertyChanged("HSN");
             }
         }
 
-        private string item;
+        private string itemname;
         public string ItemName
         {
-            get { return item; }
+            get { return itemname; }
             set
             {
-                item = value;
-                OnPropertyChanged();
+                itemname = value;
+                OnPropertyChanged("ItemName");
             }
         }
         private string qty;
@@ -120,7 +141,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             {
                 qty = value;
             
-                OnPropertyChanged();
+                OnPropertyChanged("Qty");
             }
         }
 
@@ -131,17 +152,18 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             set
             {
                 mrp = value;
-                OnPropertyChanged();
+                OnPropertyChanged("Mrp");
             }
         }
-        private string discount;
-        public string Discount
+
+        private string price;
+        public string Price
         {
-            get { return discount; }
+            get { return price; }
             set
             {
-                discount = value;
-                OnPropertyChanged();
+                price = value;
+                OnPropertyChanged("Price");
             }
         }
 
@@ -152,7 +174,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             set
             {
                 cgst = value;
-                OnPropertyChanged();
+                OnPropertyChanged("Cgst");
             }
         }
 
@@ -163,10 +185,19 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             set
             {
                 sgst = value;
-                OnPropertyChanged();
+                OnPropertyChanged("Sgst");
             }
         }
-
+        private string igst;
+        public string Igst
+        {
+            get { return igst; }
+            set
+            {
+                igst = value;
+                OnPropertyChanged("Igst");
+            }
+        }
 
         private string amount;
         public string Amount
@@ -175,7 +206,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             set
             {
                 amount = value;
-                OnPropertyChanged();
+                OnPropertyChanged("Amount");
             }
         }
         private string salesman;
@@ -188,19 +219,10 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
                 OnPropertyChanged();
             }
         }
-        private ObservableCollection<Models.SalesmanOptionsDataStructure> salesmanoptions;
-        public ObservableCollection<Models.SalesmanOptionsDataStructure> SalesmanOptions
-        {
-            get { return salesmanoptions; }
-            set
-            {
-                salesmanoptions = value;
-                OnPropertyChanged();
-            }
-        }
+      
 
         private bool dataChanged = false;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged(string name = null)
         {
             dataChanged = true;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
