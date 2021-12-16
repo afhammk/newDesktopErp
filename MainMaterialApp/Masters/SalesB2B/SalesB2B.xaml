@@ -76,7 +76,7 @@
                         
                     </syncfusion:UpDown>
                 </Grid>
-                <DatePicker  Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Margin="0 3 5 0"  Padding="3" Style="{StaticResource MaterialDesignOutlinedDatePicker}"></DatePicker>
+                <DatePicker x:Name="InvoiceDatePicker" SelectedDate="{Binding Path=InvoiceDate , Mode=TwoWay , UpdateSourceTrigger=PropertyChanged}"  Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Margin="0 3 5 0"  Padding="3" Style="{StaticResource MaterialDesignOutlinedDatePicker}"></DatePicker>
 
                 <Button Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100"  materialDesign:ButtonAssist.CornerRadius="15"  Style="{StaticResource MaterialDesignOutlinedDarkButton}" Foreground="{DynamicResource PrimaryHueMidBrush}" >
                     <Button.Content >

@@ -6,9 +6,22 @@ using System.Text;
 namespace MainMaterialApp.Masters.SalesB2B.Models
 {
     class BasicInfo :INotifyPropertyChanged , IDataErrorInfo
+
     {
+
         public event PropertyChangedEventHandler PropertyChanged;
-      
+
+
+        private DateTime invoicedate =DateTime.Now;
+        public DateTime InvoiceDate
+        {
+            get { return invoicedate; }
+            set
+            {
+                invoicedate = value;
+                OnPropertyChanged("InvoiceDate");
+            }
+        }
         private Models.PartyModel partyselected { get; set; }
         public Models.PartyModel PartySelected
         {
