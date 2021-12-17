@@ -252,14 +252,38 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
             {
                 case "Barcode":
                     if (String.IsNullOrWhiteSpace(Barcode) && dataChanged)
-                        return "Barcode is empty";
+                        return "Barcode required";
                   
                     else
                     {
                         return string.Empty;
                     }
+                case "Qty":
+                    if (Qty!=null && !Qty.All(c => char.IsDigit(c)))
+                    {
+                        return "Qty only numbers";
 
-               
+                    }
+                    else
+                    {
+                        return string.Empty;
+                    }
+
+                //    if (String.IsNullOrWhiteSpace(Qty) && dataChanged)
+                //        return "Qty required";
+
+                //    else if (!double.TryParse(Qty, out double i) && dataChanged)
+                //    {
+                //        return "only characters";
+                //    }
+
+                //    else
+                //    {
+                //        return string.Empty;
+                //    }
+
+
+
                 default:
                     return string.Empty;
             }

@@ -56,9 +56,9 @@ namespace MainMaterialApp.Masters.SalesB2C
 
         private void PayNow_Click(object sender, RoutedEventArgs e)
         {
-            var paymentWindow = new SubWindows.PaymentWindow(() => Blur.Radius = 0);
-            Blur.Radius = 5;
-            paymentWindow.ShowDialog();
+            //var paymentWindow = new SubWindows.PaymentWindow(() => Blur.Radius = 0);
+            //Blur.Radius = 5;
+            //paymentWindow.ShowDialog();
            
         }
 

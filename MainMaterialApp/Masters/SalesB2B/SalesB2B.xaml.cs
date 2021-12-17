@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,8 +23,10 @@ namespace MainMaterialApp.Masters.SalesB2B
     
     public partial class SalesB2B : UserControl
     {
-        int branchid = 1;
-        int counterid = 1;
+        string branchid = "1";
+        string counterid = "1";
+        string salesId = "0";
+        string status = "0";
 
         QueryHandler.QueryHandler queryHandler = new QueryHandler.QueryHandler();
         ManualValidationHandler.ManualValidationHandler err = new ManualValidationHandler.ManualValidationHandler();
@@ -41,26 +44,38 @@ namespace MainMaterialApp.Masters.SalesB2B
             B2BDatagrid.ItemsSource = datagriditems;
             TotalsGrid.DataContext = totals;
             PartySelectbox.ItemsSource = partiesOptions;
+            InvoiceNoNumericField.DataContext = basicinfo;
             InvoiceDatePicker.DataContext = basicinfo;
             PartySelectbox.DataContext = basicinfo;
+            CheckError.DataContext = basicinfo;
 
-            var invoiceNoResponse = queryHandler.HandleQuery("SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1", "select");
-
-            if(invoiceNoResponse.HasValues)
-                InvoiceNoNumericField.Value = Convert.ToDouble(invoiceNoResponse[0]["invno"].ToString());
-            
-            var response = queryHandler.HandleQuery("SELECT id,name,stateid FROM public.suppliers WHERE deletedat IS NULL", "select");
-
-            if (response.HasValues)
-            {
-                foreach (var item in response)
+            setInvoiceNo();
+            void setInvoiceNo(){
+                var invoiceNoResponse = queryHandler.HandleQuery("SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1", "select");
+                if (invoiceNoResponse!=null && invoiceNoResponse.HasValues)
                 {
-                    partiesOptions.Add(new Models.PartyModel() { Id = item["id"].ToString(), Name = item["name"].ToString(), StateId = item["stateid"].ToString() });
-
+                    status = "1";
+                    basicinfo.InvoiceNo = Convert.ToDouble(invoiceNoResponse[0]["invno"].ToString());
                 }
             }
-            
+
+
+            setPartyOptions();
+            void setPartyOptions()
+            {
+                var response = queryHandler.HandleQuery("SELECT id,name,stateid FROM public.suppliers WHERE deletedat IS NULL", "select");
+                if (response != null && response.HasValues)
+                {
+                    foreach (var item in response)
+                    {
+                        partiesOptions.Add(new Models.PartyModel() { Id = item["id"].ToString(), Name = item["name"].ToString(), StateId = item["stateid"].ToString() });
+                    }
+                }
+            }
+
             datagriditems.Add(new Models.TableDataStructure());
+
+
         }
 
 
@@ -73,36 +88,31 @@ namespace MainMaterialApp.Masters.SalesB2B
                 var editedText = editedTextbox.Text;
 
                 Mouse.OverrideCursor = Cursors.Wait;
-                var res = queryHandler.HandleQuery($"SELECT pd.barcode,pd.itemid,pd.variantid,pd.mrp,pd.cost as price,i.hsn,CONCAT(i.name,' ',iv.name) as item, CASE WHEN td.cgstrate IS NULL THEN 0 ELSE td.cgstrate END, CASE WHEN td.sgstrate IS NULL THEN 0 ELSE td.sgstrate END, CASE WHEN td.igstrate IS NULL THEN 0 ELSE td.igstrate END FROM public.purchaseitemdetails pd LEFT JOIN items i ON pd.itemid = i.id LEFT JOIN itemvariants iv ON pd.variantid = iv.id LEFT JOIN taxes t ON i.taxid = t.id LEFT JOIN taxdetails td ON t.id = td.taxid AND td.type= 'E' AND (pd.mrp between td.ratefrom AND td.rateto ) WHERE pd.barcode='C98562' ", "select");
+                var res = queryHandler.HandleQuery($"SELECT pd.barcode,pd.itemid,pd.variantid,pd.mrp,pd.cost as price,i.hsn,CONCAT(ic.name,' ',b.name,' ',i.articlenumber,' ',iv.name) as item, CASE WHEN td.cgstrate IS NULL THEN 0 ELSE td.cgstrate END, CASE WHEN td.sgstrate IS NULL THEN 0 ELSE td.sgstrate END, CASE WHEN td.igstrate IS NULL THEN 0 ELSE td.igstrate END FROM public.purchaseitemdetails pd LEFT JOIN items i ON pd.itemid = i.id LEFT JOIN itemcategories ic ON i.categoryid = ic.id LEFT JOIN brands b ON i.brandid = b.id LEFT JOIN itemvariants iv ON pd.variantid = iv.id LEFT JOIN taxes t ON i.taxid = t.id LEFT JOIN taxdetails td ON t.id = td.taxid AND td.type= 'E' AND (pd.mrp between td.ratefrom AND td.rateto ) WHERE pd.barcode='{editedText}' ", "select");
                 Mouse.OverrideCursor = null;
                 
-                if (res.HasValues)
+                if (res!=null && res.HasValues)
                 {
-
-                   row.ItemName = res[0]["item"].ToString();
-                   row.Barcode = res[0]["barcode"].ToString();
-                   row.ItemId = res[0]["itemid"].ToString();
-                   row.VariantId = res[0]["variantid"].ToString();
-                   row.HSN = String.IsNullOrEmpty(res[0]["hsn"].ToString()) ? "0" : res[0]["hsn"].ToString();
-                   row.Mrp = String.IsNullOrEmpty(res[0]["mrp"].ToString()) ? "0" : res[0]["mrp"].ToString();
-                   row.Price = String.IsNullOrEmpty(res[0]["price"].ToString()) ? "0" : res[0]["price"].ToString();
-                   row.Cgst = "0";
-                   row.Sgst = "0";
-                   row.Igst = "0";
-                   row.CgstDetails = res[0]["cgstrate"].ToString();
-                   row.SgstDetails = res[0]["sgstrate"].ToString();
-                   row.IgstDetails = res[0]["igstrate"].ToString();
+                    row.No = e.Row.GetIndex().ToString();
+                    row.ItemName = res[0]["item"].ToString();
+                    row.Barcode = res[0]["barcode"].ToString();
+                    row.ItemId = res[0]["itemid"].ToString();
+                    row.VariantId = res[0]["variantid"].ToString();
+                    row.HSN = String.IsNullOrEmpty(res[0]["hsn"].ToString()) ? "0" : res[0]["hsn"].ToString();
+                    row.Mrp = String.IsNullOrEmpty(res[0]["mrp"].ToString()) ? "0" : res[0]["mrp"].ToString();
+                    row.Price = String.IsNullOrEmpty(res[0]["price"].ToString()) ? "0" : res[0]["price"].ToString();
+                    row.Cgst = "0";
+                    row.Sgst = "0";
+                    row.Igst = "0";
+                    row.CgstDetails = res[0]["cgstrate"].ToString();
+                    row.SgstDetails = res[0]["sgstrate"].ToString();
+                    row.IgstDetails = res[0]["igstrate"].ToString();
                     //datagriditems[e.Row.GetIndex()].Amount = res[0]["amount"].ToString();
 
 
                     B2BDatagrid.CurrentCell = new DataGridCellInfo(B2BDatagrid.Items[e.Row.GetIndex()], B2BDatagrid.Columns[4]);
                     B2BDatagrid.BeginEdit();
                     editedTextbox.Text = editedTextbox.Text;
-
-                    if (datagriditems.Count == e.Row.GetIndex() + 1)
-                    {
-                        datagriditems.Add(new Models.TableDataStructure());
-                    }
                 }
                 else
                 {
@@ -116,21 +126,26 @@ namespace MainMaterialApp.Masters.SalesB2B
             {
                 var editedTextbox = e.EditingElement as TextBox;
                 var editedText = editedTextbox.Text;
-                if (string.IsNullOrWhiteSpace(editedText) || string.IsNullOrEmpty(datagriditems[e.Row.GetIndex()].Barcode))
+                if (string.IsNullOrWhiteSpace(editedText) || !editedText.All(c => char.IsDigit(c)))
                 {
                     e.Cancel = true;
                 }
                 else
                 {
+                    row.Qty = Math.Round(Convert.ToDouble(editedText)).ToString();
                     row.Cgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.CgstDetails) / 100)),2).ToString(); 
                     row.Sgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.SgstDetails) / 100)),2).ToString(); 
                     row.Igst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.IgstDetails) / 100)),2).ToString(); 
                     row.Amount = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) + Convert.ToDouble(row.Cgst) + Convert.ToDouble(row.Sgst)),2).ToString();
                     CalculateTotals();
+
+                    if (datagriditems.Count == e.Row.GetIndex() + 1)
+                    {
+                        datagriditems.Add(new Models.TableDataStructure());
+                    }
                     //B2BDatagrid.CurrentCell = new DataGridCellInfo(B2BDatagrid.Items[e.Row.GetIndex()+1], B2BDatagrid.Columns[1]);
                     //B2BDatagrid.BeginEdit();
                     //editedTextbox.Text = editedTextbox.Text;
-
                 }
 
             }
@@ -174,63 +189,84 @@ namespace MainMaterialApp.Masters.SalesB2B
                 B2BDatagrid.CommitEdit();
                 e.Handled = true;
             }
+            else if(e.Key == Key.Escape)
+            {
+                DeleteSelectedRow();
+                void DeleteSelectedRow()
+                {
+                    var y = B2BDatagrid.SelectedItem;
+                }
+            }
         }
 
         private void InvoiceNoNumericField_ValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            Mouse.OverrideCursor = Cursors.Wait;
-            Task.Delay(1000).Wait();
-            var res = queryHandler.HandleQuery("SELECT s.id, s.invoiceno, s.invoicedate, s.partyid, s.invoicetype, s.netamount,sl.id supplierid,sl.name suppliername,sl.stateid supplier_stateid FROM public.salesinvoices s LEFT JOIN suppliers sl ON s.partyid = sl.id WHERE s.invoiceno=27 AND s.branchid =1 AND s.counterid =1 AND s.invoicetype='BB' ", "select");
-            Mouse.OverrideCursor = null;
-            datagriditems.Clear();
-
-            int index=0;
-            for (int i = 0; i < partiesOptions.Count; i++)
+      
+            if (status == "1")
             {
-                if (partiesOptions[i].Id == res[0]["supplierid"].ToString())
+                status = "0";
+                return;
+            }
+
+
+            setMainPageDetails();
+            void setMainPageDetails()
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+                var res = queryHandler.HandleQuery($"SELECT s.id, s.invoiceno, s.invoicedate, s.partyid, s.invoicetype, s.netamount,sl.id supplierid,sl.name suppliername,sl.stateid supplier_stateid FROM public.salesinvoices s LEFT JOIN suppliers sl ON s.partyid = sl.id WHERE s.invoiceno='{basicinfo.InvoiceNo}' AND s.branchid ='{branchid}' AND s.counterid ='{counterid}' AND s.invoicetype='BB' ", "select");
+                Mouse.OverrideCursor = null;
+
+                if (res!=null && res.HasValues)
                 {
-                    index = i;
+                    salesId = res[0]["id"].ToString();
+                    datagriditems.Clear();
+                  
+                    selectCombobox();
+                    void selectCombobox()
+                    {
+                        int index = 0;
+                        for (int i = 0; i < partiesOptions.Count; i++)
+                        {
+                            if (partiesOptions[i].Id == res[0]["supplierid"].ToString())
+                            {
+                                index = i;
+                            }
+                        }
+                        PartySelectbox.SelectedIndex = index;
+                    }
+                    var res1 = queryHandler.HandleQuery($"SELECT s.itemid, s.variantid, s.quantity, s.mrp, s.cost, s.rate, s.igstpercentage, s.igst, s.cgstpercentage, s.cgst, s.sgstpercentage, s.sgst, s.amount, s.barcode,CONCAT(ic.name,' ',b.name,' ',i.articlenumber,' ',iv.name) as item,i.hsn FROM public.salesinvoicedetails s LEFT JOIN items i ON s.itemid = i.id LEFT JOIN itemcategories ic ON i.categoryid = ic.id LEFT JOIN brands b ON i.brandid = b.id LEFT JOIN itemvariants iv ON s.variantid = iv.id WHERE s.salesid='{salesId}';", "select");
+                    if (res!=null && res1.HasValues)
+                    {
+                        addDataToTable();
+                        void addDataToTable()
+                        {
+                            foreach (var item in res1)
+                            {
+                                datagriditems.Add(new Models.TableDataStructure()
+                                {
+
+                                    ItemName = item["item"].ToString(),
+                                    Barcode = item["barcode"].ToString(),
+                                    Qty = item["quantity"].ToString(),
+                                    HSN = item["hsn"].ToString(),
+                                    Mrp = item["mrp"].ToString(),
+                                    Price = item["cost"].ToString(),
+                                    Igst = item["igst"].ToString(),
+                                    IgstDetails = item["igstpercentage"].ToString(),
+                                    Cgst = item["cgst"].ToString(),
+                                    CgstDetails = item["cgstpercentage"].ToString(),
+                                    Sgst = item["sgst"].ToString(),
+                                    SgstDetails = item["sgstpercentage"].ToString(),
+                                    Amount = item["igst"].ToString()
+                                });
+
+                            }
+                            datagriditems.Add(new Models.TableDataStructure());
+                        }
+                    }
+                    
                 }
             }
-            PartySelectbox.SelectedIndex = index;
-
-            //Models.PartyModel obj = new Models.PartyModel();
-            //obj.Id = res[0]["supplierid"].ToString();
-            //obj.StateId = res[0]["supplier_stateid"].ToString();
-            //obj.Name = res[0]["suppliername"].ToString();
-            //PartySelectbox.SelectedItem = obj;
-            //MessageBox.Show("success");
-
-            //if (res.HasValues)
-            //{
-            //    try
-            //    {
-            //        foreach (var item in res)
-            //        {
-            //            datagriditems.Add(new Models.TableDataStructure()
-            //            {
-
-            //                ItemName = item["item"].ToString(),
-            //                Barcode = item["barcode"].ToString(),
-            //                HSN = item["hsn"].ToString(),
-            //                Mrp = item["mrp"].ToString(),
-
-            //                Cgst = item["cgst"].ToString(),
-            //                Sgst = item["sgst"].ToString(),
-            //                Amount = item["amount"].ToString()
-            //            });
-
-            //        }
-            //    }
-            //    catch (Exception error)
-            //    {
-            //        MessageBox.Show(error.Message);
-            //    }
-
-            //}
-            //datagriditems.Add(new Models.TableDataStructure());
-
-
         }
 
 
@@ -245,34 +281,62 @@ namespace MainMaterialApp.Masters.SalesB2B
         private void Save_Click(object sender, RoutedEventArgs e)
         {
 
-
+            basicinfo.PartySelected = null;
+            basicinfo.CheckError = null;
+            return;
             //if (basicinfo.PartySelected == null)
             //{
             //    basicinfo.PartySelected = null;
+
             //    return;
             //}
             //if (datagriditems.Count <= 1)
             //    return;
-            //var partyid = PartySelectbox.SelectedItem as Models.PartyModel;
-            //var partyidstring = partyid.Id.ToString();
 
-            //var invDate = basicinfo.InvoiceDate.ToString("yyyy/MM/dd");
 
-            //var res = queryHandler.HandleQuery($"INSERT INTO public.salesinvoices( invoiceno, invoicedate, partyid, invoicetype, netamount, branchid, counterid) VALUES((SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1), '{invDate}', '{partyidstring}', 'BB', '{totals.TotalAmount}', '{branchid}', '{counterid}') RETURNING id;", "insert");
-            //if (res.HasValues == true)
-            //{
-            //    var query = getInsertQuery();
-            //    var insertquery = queryHandler.HandleQuery(query, "insert");
-            //    if (insertquery.HasValues)
-            //        MessageBox.Show("success");
-            //    else
-            //        MessageBox.Show("error saving");
-            //}
-            //else
-            //{
-            //    MessageBox.Show("failure fetching id");
+            var partyid = PartySelectbox.SelectedItem as Models.PartyModel;
+            var partyidstring = partyid.Id.ToString();
+            var invDate = basicinfo.InvoiceDate.ToString("yyyy/MM/dd");
 
-            //}
+            if (salesId == "0")
+            {
+                var res = queryHandler.HandleQuery($"INSERT INTO public.salesinvoices( invoiceno, invoicedate, partyid, invoicetype, netamount, branchid, counterid) VALUES((SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1), '{invDate}', '{partyidstring}', 'BB', '{totals.TotalAmount}', '{branchid}', '{counterid}') RETURNING id;", "insert");
+
+                if (res != null && res.HasValues)
+                {
+                    salesId = res[0]["id"].ToString();
+                    var query = getInsertQuery();
+
+                    var insertquery = queryHandler.HandleQuery(query, "insert");
+                    if (insertquery!=null)
+                        MessageBox.Show("Created Succesfully");
+                    else
+                        MessageBox.Show("error creating");
+
+                }
+            }
+            else
+            {
+                var partyid1 = PartySelectbox.SelectedItem as Models.PartyModel;
+                var partyidstring1 = partyid.Id.ToString();
+                var invDate1 = basicinfo.InvoiceDate.ToString("yyyy/MM/dd");
+
+                var query = getInsertQuery();
+
+                var updatequery = queryHandler.HandleQuery($"UPDATE public.salesinvoices SET invoicedate ='{invDate1}', partyid ='{partyidstring1}', netamount ='{totals.TotalAmount}' WHERE id ='{salesId}';", "update");
+                if (updatequery!=null)
+                {
+                    var deleteandinsertquery = queryHandler.HandleQuery($"DELETE FROM public.salesinvoicedetails WHERE salesid ={salesId};{query}", "deleteandinsert");
+                    if (deleteandinsertquery!=null)
+                    {
+                        MessageBox.Show("updated succesfully");
+                    }
+                    else
+                    {
+                        MessageBox.Show("error updating");
+                    }
+                }
+            }
         }
 
         private string getInsertQuery()
@@ -281,10 +345,9 @@ namespace MainMaterialApp.Masters.SalesB2B
             for (int i = 0; i < datagriditems.Count; i++)
             {
                 var item = datagriditems[i];
-                var str = $"(42,'{item.ItemId}','{item.VariantId}','{item.Qty}','{item.Mrp}','{item.Price}','{item.Price}','{item.Igst}','{item.IgstDetails}','{item.Cgst}','{item.CgstDetails}','{item.Sgst}','{item.SgstDetails}','{item.Amount}','{item.Barcode}'),";
+                var str = $"({salesId},'{item.ItemId}','{item.VariantId}','{item.Qty}','{item.Mrp}','{item.Price}','{item.Price}','{item.Igst}','{item.IgstDetails}','{item.Cgst}','{item.CgstDetails}','{item.Sgst}','{item.SgstDetails}','{item.Amount}','{item.Barcode}'),";
                 if (!String.IsNullOrWhiteSpace(item.Barcode) && !String.IsNullOrEmpty(item.Qty))
                 {
-
                     query = query + str;
                 }
 

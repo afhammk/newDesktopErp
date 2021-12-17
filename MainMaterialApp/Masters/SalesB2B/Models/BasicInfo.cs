@@ -12,7 +12,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
         public event PropertyChangedEventHandler PropertyChanged;
 
 
-        private DateTime invoicedate =DateTime.Now;
+        private DateTime invoicedate = DateTime.Now;
         public DateTime InvoiceDate
         {
             get { return invoicedate; }
@@ -32,9 +32,28 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
                 OnPropertyChanged("PartySelected");
             }
         }
-
+        private string checkerror { get; set; }
+        public string CheckError
+        {
+            get { return checkerror; }
+            set
+            {
+                checkerror = value;
+                OnPropertyChanged("CheckError");
+            }
+        }
+        private double invoiceno { get; set; }
+        public double InvoiceNo
+        {
+            get { return invoiceno; }
+            set
+            {
+                invoiceno = value;
+                OnPropertyChanged("InvoiceNo");
+            }
+        }
         private bool dataChanged = false;
-        protected void OnPropertyChanged(string name = null)
+        protected void OnPropertyChanged(string name)
         {
             dataChanged = true;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -71,8 +90,14 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
                     {
                         return string.Empty;
                     }
+                case "CheckError":
+                    if (CheckError == null && dataChanged)
+                        return "CheckError is empty";
 
-
+                    else
+                    {
+                        return string.Empty;
+                    }
                 default:
                     return string.Empty;
             }

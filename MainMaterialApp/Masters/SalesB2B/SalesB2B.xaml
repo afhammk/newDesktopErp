@@ -72,7 +72,7 @@
                     Height="24"
                     TextAlignment="Center"
                     ValueChanged="InvoiceNoNumericField_ValueChanged"
-                    Value="0" >
+                    Value="{Binding Path=InvoiceNo , Mode=TwoWay , UpdateSourceTrigger=PropertyChanged}" >
                         
                     </syncfusion:UpDown>
                 </Grid>
@@ -92,11 +92,12 @@
                 <ComboBox x:Name="PartySelectbox" SelectedItem="{Binding Path=PartySelected , Mode=TwoWay , UpdateSourceTrigger=PropertyChanged , ValidatesOnDataErrors=True}"  Padding="10 7" Margin="0 0 3 0" Height="35" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2" VerticalAlignment="Top"  Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Party" >
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay , ValidatesOnExceptions=True}"></TextBlock>
+                            <TextBlock Text="{Binding Path=Name}"></TextBlock>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
+                <TextBox Grid.Row="1" Grid.Column="3" Style="{StaticResource MaterialDesignOutlinedTextBox}" x:Name="CheckError" Text="{Binding Path=CheckError, Mode=TwoWay , UpdateSourceTrigger=PropertyChanged , ValidatesOnDataErrors=True}"></TextBox>
 
             </Grid>
             <Grid Grid.Row="1"  >
@@ -105,15 +106,33 @@
                     <RowDefinition Height="25"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <DataGrid x:Name="B2BDatagrid" AutoGenerateColumns="False" Grid.Row="0" CanUserAddRows="False"  RowDetailsVisibilityMode="Visible"  CellEditEnding="B2BDatagrid_CellEditEnding" PreviewKeyDown="B2BDatagrid_PreviewKeyDown"  >
+                <DataGrid x:Name="B2BDatagrid" AutoGenerateColumns="False" Grid.Row="0" CanUserAddRows="False"  RowDetailsVisibilityMode="Visible"  CellEditEnding="B2BDatagrid_CellEditEnding" PreviewKeyDown="B2BDatagrid_PreviewKeyDown"  SelectionMode="Single"  SelectionUnit="FullRow" >
                     <DataGrid.Resources>
                         <Style TargetType="ScrollBar">
                             
                         </Style>
                     </DataGrid.Resources>
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="LightBlue"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="LightBlue" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
                     <DataGrid.Columns >
 
-                        <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}"  ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Header="Id" Width="50" Binding= "{Binding Path=Id, Mode=TwoWay , UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" >
+                        <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}"  ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Header="Id" Width="50" Binding= "{Binding Path=No, Mode=TwoWay , UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" >
                         </materialDesign:DataGridTextColumn>
                         <materialDesign:DataGridTextColumn EditingElementStyle="{StaticResource editingElement}" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Barcode" Binding= "{Binding Path=Barcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged , ValidatesOnDataErrors=True}"   >
                         </materialDesign:DataGridTextColumn>

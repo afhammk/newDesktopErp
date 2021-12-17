@@ -35,42 +35,18 @@ namespace MainMaterialApp.QueryHandler
                 comm.CommandText = query;
                 NpgsqlDataReader dataReader = comm.ExecuteReader();
 
-                  
-                if (queryType == "select" || queryType=="insert")
-                {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+                var y = dataTable;
+                string JSONString = string.Empty;
+                JSONString = JsonConvert.SerializeObject(dataTable);
+                JArray jsonData = JArray.Parse(JSONString);
+                return jsonData;
 
-                    var dataTable = new DataTable();
-                    dataTable.Load(dataReader);
-                    var y = dataTable;
-                    string JSONString = string.Empty;
-                    JSONString = JsonConvert.SerializeObject(dataTable);
-                    JArray jsonData = JArray.Parse(JSONString);
-                    if (!jsonData.HasValues)
-                    {
-                        JObject obj = new JObject();
-                        obj.Add("isSuccess", "true");
-                        jsonData.Add(obj);
-                    }
-                        
-                    return jsonData;
-
-
-                }
-                else
-                {
-                    JObject obj = new JObject();
-                    obj.Add("isSuccess", "true");
-                    JArray jsonData = new JArray();
-                    jsonData.Add(obj);
-                    return jsonData;
-                }
             }
             catch
-            {
-                //JObject obj = new JObject();
-                JArray jsonData = new JArray();
-                //jsonData.Add(obj);
-                return jsonData;
+            {           
+                return null;
             }
             finally
             {
