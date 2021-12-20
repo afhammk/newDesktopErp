@@ -46,8 +46,7 @@ namespace MainMaterialApp.Masters.SalesB2B
             PartySelectbox.ItemsSource = partiesOptions;
             InvoiceNoNumericField.DataContext = basicinfo;
             InvoiceDatePicker.DataContext = basicinfo;
-            PartySelectbox.DataContext = basicinfo;
-            CheckError.DataContext = basicinfo;
+            PartySelectbox.DataContext = basicinfo;        
 
         }
 
@@ -111,14 +110,12 @@ namespace MainMaterialApp.Masters.SalesB2B
                     row.IgstDetails = res[0]["igstrate"].ToString();
                     //datagriditems[e.Row.GetIndex()].Amount = res[0]["amount"].ToString();
 
-
                     B2BDatagrid.CurrentCell = new DataGridCellInfo(B2BDatagrid.Items[e.Row.GetIndex()], B2BDatagrid.Columns[4]);
                     B2BDatagrid.BeginEdit();
                     editedTextbox.Text = editedTextbox.Text;
                 }
                 else
                 {
-
                     e.Cancel = true;
                     err.Trigger(editedTextbox, "Barcode not found");
                 }
@@ -128,18 +125,22 @@ namespace MainMaterialApp.Masters.SalesB2B
             {
                 var editedTextbox = e.EditingElement as TextBox;
                 var editedText = editedTextbox.Text;
-                if (string.IsNullOrWhiteSpace(editedText) || !editedText.All(c => char.IsDigit(c)))
+                if (string.IsNullOrWhiteSpace(editedText))
                 {
-                    err.Trigger(editedTextbox, "Qty cannot be empty");
+                    datagriditems[e.Row.GetIndex()].Qty = "";
+                    e.Cancel = true;
+                }
+                else if (!editedText.All(c => char.IsDigit(c)))
+                {
                     e.Cancel = true;
                 }
                 else
                 {
                     row.Qty = Math.Round(Convert.ToDouble(editedText)).ToString();
-                    row.Cgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.CgstDetails) / 100)),2).ToString(); 
-                    row.Sgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.SgstDetails) / 100)),2).ToString(); 
-                    row.Igst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.IgstDetails) / 100)),2).ToString(); 
-                    row.Amount = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) + Convert.ToDouble(row.Cgst) + Convert.ToDouble(row.Sgst)),2).ToString();
+                    row.Cgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.CgstDetails) / 100)), 2).ToString();
+                    row.Sgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.SgstDetails) / 100)), 2).ToString();
+                    row.Igst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.IgstDetails) / 100)), 2).ToString();
+                    row.Amount = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) + Convert.ToDouble(row.Cgst) + Convert.ToDouble(row.Sgst)), 2).ToString();
                     CalculateTotals();
 
                     if (datagriditems.Count == e.Row.GetIndex() + 1)
@@ -153,35 +154,6 @@ namespace MainMaterialApp.Masters.SalesB2B
 
             }
 
-        }
-
-        public void CalculateTotals()
-        {
-            double totalquantity = 0;
-            double totalmrp = 0;
-            double totalhsn = 0;
-            double totalcgst = 0;
-            double totalsgst = 0;
-            double totalamount = 0;
-            double totalprice = 0;
-            foreach (var items in datagriditems)
-            {
-                totalquantity += Convert.ToDouble(string.IsNullOrEmpty(items.Qty) ? 0 : items.Qty);
-                totalmrp += Convert.ToDouble(string.IsNullOrEmpty(items.Mrp) ? 0 : items.Mrp);
-                totalprice += Convert.ToDouble(string.IsNullOrEmpty(items.Price) ? 0 : items.Price);
-                totalhsn += Convert.ToDouble(string.IsNullOrEmpty(items.HSN) ? 0 : items.HSN);
-                totalcgst += Convert.ToDouble(string.IsNullOrEmpty(items.Cgst) ? 0 : items.Cgst);
-                totalsgst += Convert.ToDouble(string.IsNullOrEmpty(items.Sgst) ? 0 : items.Sgst);
-                totalamount += Convert.ToDouble(string.IsNullOrEmpty(items.Amount) ? 0 : items.Amount);
-
-            }
-            totals.TotalQuantity = totalquantity.ToString();
-            totals.TotalMrp = totalmrp.ToString();
-            totals.TotalHsn = totalhsn.ToString();
-            totals.TotalPrice = totalprice.ToString();
-            totals.TotalCgst = totalcgst.ToString();
-            totals.TotalSgst = totalsgst.ToString();
-            totals.TotalAmount = totalamount.ToString();
         }
 
 
@@ -198,6 +170,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                 void DeleteSelectedRow()
                 {
                     datagriditems.RemoveAt(B2BDatagrid.SelectedIndex);
+                    CalculateTotals();
                 }
             }
         }
@@ -210,7 +183,6 @@ namespace MainMaterialApp.Masters.SalesB2B
                 status = "0";
                 return;
             }
-
 
             setMainPageDetails();
             void setMainPageDetails()
@@ -267,7 +239,12 @@ namespace MainMaterialApp.Masters.SalesB2B
                             datagriditems.Add(new Models.TableDataStructure());
                         }
                     }
-                    
+                }
+                else
+                {
+                    datagriditems.Clear();
+                    datagriditems.Add(new Models.TableDataStructure());
+                    CalculateTotals();
                 }
             }
         }
@@ -283,7 +260,7 @@ namespace MainMaterialApp.Masters.SalesB2B
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-
+            
             if (basicinfo.PartySelected == null)
             {
                 basicinfo.PartySelected = null;
@@ -294,7 +271,15 @@ namespace MainMaterialApp.Masters.SalesB2B
                 MessageBox.Show("add atleast one row");
                 return;
             }
-
+            foreach(var item in datagriditems)
+            {
+                if (item.HasErrors.ToString() == "True")
+                {
+                    MessageBox.Show("Error in Table");
+                    return;
+                }
+            }
+         
 
             var partyid = PartySelectbox.SelectedItem as Models.PartyModel;
             var partyidstring = partyid.Id.ToString();
@@ -358,6 +343,35 @@ namespace MainMaterialApp.Masters.SalesB2B
             query = query.Remove(query.Length - 1, 1);
             query = query + ";";
             return query;
+        }
+
+        public void CalculateTotals()
+        {
+            double totalquantity = 0;
+            double totalmrp = 0;
+            double totalhsn = 0;
+            double totalcgst = 0;
+            double totalsgst = 0;
+            double totalamount = 0;
+            double totalprice = 0;
+            foreach (var items in datagriditems)
+            {
+                totalquantity += Convert.ToDouble(string.IsNullOrEmpty(items.Qty) ? 0 : Math.Round(Convert.ToDouble(items.Qty), 2));
+                totalmrp += Convert.ToDouble(string.IsNullOrEmpty(items.Mrp) ? 0 : Math.Round(Convert.ToDouble(items.Mrp), 2));
+                totalprice += Convert.ToDouble(string.IsNullOrEmpty(items.Price) ? 0 : Math.Round(Convert.ToDouble(items.Price), 2));
+                totalhsn += Convert.ToDouble(string.IsNullOrEmpty(items.HSN) ? 0 : Math.Round(Convert.ToDouble(items.HSN), 2));
+                totalcgst += Convert.ToDouble(string.IsNullOrEmpty(items.Cgst) ? 0 : Math.Round(Convert.ToDouble(items.Cgst), 2));
+                totalsgst += Convert.ToDouble(string.IsNullOrEmpty(items.Sgst) ? 0 : Math.Round(Convert.ToDouble(items.Sgst), 2));
+                totalamount += Convert.ToDouble(string.IsNullOrEmpty(items.Amount) ? 0 : Math.Round(Convert.ToDouble(items.Amount), 2));
+
+            }
+            totals.TotalQuantity = Math.Round(Convert.ToDouble(totalquantity), 2).ToString();
+            totals.TotalMrp = Math.Round(Convert.ToDouble(totalmrp), 2).ToString();
+            totals.TotalHsn = Math.Round(Convert.ToDouble(totalhsn), 2).ToString();
+            totals.TotalPrice = Math.Round(Convert.ToDouble(totalprice), 2).ToString();
+            totals.TotalCgst = Math.Round(Convert.ToDouble(totalcgst), 2).ToString();
+            totals.TotalSgst = Math.Round(Convert.ToDouble(totalsgst), 2).ToString();
+            totals.TotalAmount = Math.Round(Convert.ToDouble(totalamount), 2).ToString();
         }
     }
 }

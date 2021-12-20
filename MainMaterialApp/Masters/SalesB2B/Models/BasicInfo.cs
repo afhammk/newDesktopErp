@@ -32,16 +32,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
                 OnPropertyChanged("PartySelected");
             }
         }
-        private string checkerror { get; set; }
-        public string CheckError
-        {
-            get { return checkerror; }
-            set
-            {
-                checkerror = value;
-                OnPropertyChanged("CheckError");
-            }
-        }
+     
         private double invoiceno { get; set; }
         public double InvoiceNo
         {
@@ -90,14 +81,7 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
                     {
                         return string.Empty;
                     }
-                case "CheckError":
-                    if (CheckError == null && dataChanged)
-                        return "CheckError is empty";
-
-                    else
-                    {
-                        return string.Empty;
-                    }
+            
                 default:
                     return string.Empty;
             }
