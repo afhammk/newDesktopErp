@@ -49,10 +49,15 @@ namespace MainMaterialApp.Masters.SalesB2B
             PartySelectbox.DataContext = basicinfo;
             CheckError.DataContext = basicinfo;
 
+        }
+
+        private void screen_Loaded(object sender, RoutedEventArgs e)
+        {
             setInvoiceNo();
-            void setInvoiceNo(){
+            void setInvoiceNo()
+            {
                 var invoiceNoResponse = queryHandler.HandleQuery("SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1", "select");
-                if (invoiceNoResponse!=null && invoiceNoResponse.HasValues)
+                if (invoiceNoResponse != null && invoiceNoResponse.HasValues)
                 {
                     status = "1";
                     basicinfo.InvoiceNo = Convert.ToDouble(invoiceNoResponse[0]["invno"].ToString());
@@ -72,10 +77,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                     }
                 }
             }
-
             datagriditems.Add(new Models.TableDataStructure());
-
-
         }
 
 
@@ -128,6 +130,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                 var editedText = editedTextbox.Text;
                 if (string.IsNullOrWhiteSpace(editedText) || !editedText.All(c => char.IsDigit(c)))
                 {
+                    err.Trigger(editedTextbox, "Qty cannot be empty");
                     e.Cancel = true;
                 }
                 else
@@ -194,7 +197,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                 DeleteSelectedRow();
                 void DeleteSelectedRow()
                 {
-                    var y = B2BDatagrid.SelectedItem;
+                    datagriditems.RemoveAt(B2BDatagrid.SelectedIndex);
                 }
             }
         }
@@ -281,17 +284,16 @@ namespace MainMaterialApp.Masters.SalesB2B
         private void Save_Click(object sender, RoutedEventArgs e)
         {
 
-            basicinfo.PartySelected = null;
-            basicinfo.CheckError = null;
-            return;
-            //if (basicinfo.PartySelected == null)
-            //{
-            //    basicinfo.PartySelected = null;
-
-            //    return;
-            //}
-            //if (datagriditems.Count <= 1)
-            //    return;
+            if (basicinfo.PartySelected == null)
+            {
+                basicinfo.PartySelected = null;
+                return;
+            }
+            if (datagriditems.Count <= 1)
+            {
+                MessageBox.Show("add atleast one row");
+                return;
+            }
 
 
             var partyid = PartySelectbox.SelectedItem as Models.PartyModel;
@@ -308,7 +310,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                     var query = getInsertQuery();
 
                     var insertquery = queryHandler.HandleQuery(query, "insert");
-                    if (insertquery!=null)
+                    if (insertquery != null)
                         MessageBox.Show("Created Succesfully");
                     else
                         MessageBox.Show("error creating");
@@ -324,10 +326,10 @@ namespace MainMaterialApp.Masters.SalesB2B
                 var query = getInsertQuery();
 
                 var updatequery = queryHandler.HandleQuery($"UPDATE public.salesinvoices SET invoicedate ='{invDate1}', partyid ='{partyidstring1}', netamount ='{totals.TotalAmount}' WHERE id ='{salesId}';", "update");
-                if (updatequery!=null)
+                if (updatequery != null)
                 {
                     var deleteandinsertquery = queryHandler.HandleQuery($"DELETE FROM public.salesinvoicedetails WHERE salesid ={salesId};{query}", "deleteandinsert");
-                    if (deleteandinsertquery!=null)
+                    if (deleteandinsertquery != null)
                     {
                         MessageBox.Show("updated succesfully");
                     }
@@ -357,7 +359,5 @@ namespace MainMaterialApp.Masters.SalesB2B
             query = query + ";";
             return query;
         }
-
     }
-
 }

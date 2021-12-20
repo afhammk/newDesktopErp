@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:MainMaterialApp.Masters.SalesB2B"
              x:Name="screen"             
              mc:Ignorable="d" 
-             
+             Loaded="screen_Loaded"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         

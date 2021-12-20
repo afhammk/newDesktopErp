@@ -258,23 +258,15 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
                     {
                         return string.Empty;
                     }
-                case "Qty":
-                    if (Qty!=null && !Qty.All(c => char.IsDigit(c)))
-                    {
-                        return "Qty only numbers";
-
-                    }
-                    else
-                    {
-                        return string.Empty;
-                    }
-
-                //    if (String.IsNullOrWhiteSpace(Qty) && dataChanged)
-                //        return "Qty required";
-
-                //    else if (!double.TryParse(Qty, out double i) && dataChanged)
+                //case "Qty":
+                //    if (Qty!=null && !Qty.All(c => char.IsDigit(c)))
                 //    {
-                //        return "only characters";
+                //        return "Qty only numbers";
+
+                //    }
+                //    else
+                //    {
+                //        return string.Empty;
                 //    }
 
                 //    else

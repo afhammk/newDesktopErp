@@ -33,15 +33,15 @@ namespace MainMaterialApp.MainWindow
             DocCont.Items.Add(x);
             
 
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += timer_Tick;
-            timer.Start();
+            //DispatcherTimer timer = new DispatcherTimer();
+            //timer.Interval = TimeSpan.FromSeconds(1);
+            //timer.Tick += timer_Tick;
+            //timer.Start();
         }
-        void timer_Tick(object sender, EventArgs e)
-        {
-            Timer.Text = DateTime.Now.ToString();
-        }
+        //void timer_Tick(object sender, EventArgs e)
+        //{
+        //    Timer.Text = DateTime.Now.ToString();
+        //}
 
 
         private void MenuBtn_Click(object sender, RoutedEventArgs e)
