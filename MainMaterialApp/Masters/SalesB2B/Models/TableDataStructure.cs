@@ -229,6 +229,8 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
 
 
         /*--------------------Error--------------------------------*/
+        public bool InvalidBarcode { get; set; }
+        
 
         private Dictionary<string, List<string>> propertyErrors = new Dictionary<string, List<string>>();
 
@@ -261,7 +263,12 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
         {
             ClearErrors(nameof(Barcode));
             if (string.IsNullOrWhiteSpace(Barcode))
-                AddError(nameof(Barcode), "Barcode cannot be empty.");        
+                AddError(nameof(Barcode), "Barcode cannot be empty.");
+            else if (InvalidBarcode == true)
+            {
+                InvalidBarcode = false;
+                AddError(nameof(Barcode), " Barcode Invalid");
+            }
         }
 
         private void AddError(string propertyName, string error)

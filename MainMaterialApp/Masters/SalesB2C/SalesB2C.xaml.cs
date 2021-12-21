@@ -10,13 +10,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 
 namespace MainMaterialApp.Masters.SalesB2C
 {
 
     public partial class SalesB2C : UserControl
     {
-        
+        string branchid = "1";
+        string counterid = "1";
+        string salesId = "0";
+        string status = "0";
+
         ObservableCollection<string> obj2 = new ObservableCollection<string>();
         ObservableCollection<Models.TableDataStructure> datagriditems = new ObservableCollection<Models.TableDataStructure>();
         Models.BasicInfo basicinfo = new Models.BasicInfo();
@@ -30,20 +35,12 @@ namespace MainMaterialApp.Masters.SalesB2C
         {
             
             InitializeComponent();
+
             InsideDatagrid.ItemsSource = datagriditems;
-            
-            datagriditems.Add(new Models.TableDataStructure());
             MobileTextBox.DataContext = basicinfo;
             NameTextBox.DataContext = basicinfo;
             PlaceTextBox.DataContext = basicinfo;
-
-            TotalQuantity.DataContext = totals;
-            TotalAmount.DataContext = totals;
-            TotalMrp.DataContext = totals;
-            TotalCgst.DataContext = totals;
-            TotalSgst.DataContext = totals;
-            TotalDiscount.DataContext = totals;
-
+            TotalsGrid.DataContext = totals;
 
             obj2.Add("afham");
             obj2.Add("sanooj");
@@ -52,14 +49,28 @@ namespace MainMaterialApp.Masters.SalesB2C
 
 
         }
-      
+        private void Screen_Loaded(object sender, RoutedEventArgs e)
+        {
+            //setInvoiceNo();
+            //void setInvoiceNo()
+            //{
+            //    var invoiceNoResponse = queryHandler.HandleQuery("SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1", "select");
+            //    if (invoiceNoResponse != null && invoiceNoResponse.HasValues)
+            //    {
+            //        status = "1";
+            //        basicinfo.InvoiceNo = Convert.ToDouble(invoiceNoResponse[0]["invno"].ToString());
+            //    }
+            //}
+
+            datagriditems.Add(new Models.TableDataStructure());
+        }
+
 
         private void PayNow_Click(object sender, RoutedEventArgs e)
         {
-            //var paymentWindow = new SubWindows.PaymentWindow(() => Blur.Radius = 0);
-            //Blur.Radius = 5;
-            //paymentWindow.ShowDialog();
-           
+            var paymentWindow = new SubWindows.PaymentWindow(() => Blur.Radius = 0);
+            Blur.Radius = 5;
+            paymentWindow.ShowDialog();
         }
 
        
@@ -74,7 +85,7 @@ namespace MainMaterialApp.Masters.SalesB2C
                    $" c LEFT JOIN cities ct ON c.cityid = ct.id WHERE c.deletedat IS " +
                    $"NULL and c.mobile = '{basicinfo.Mobile}' LIMIT 1", "select");
 
-                if (response.HasValues)
+                if (response!=null && response.HasValues)
                 {
                     basicinfo.Name = response[0]["name"].ToString();
                     basicinfo.Place = response[0]["place"].ToString();
@@ -90,77 +101,71 @@ namespace MainMaterialApp.Masters.SalesB2C
 
         private void InsideDatagrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-
+            var row = datagriditems[e.Row.GetIndex()];
             if (e.Column.Header.ToString() == "Barcode")
             {
                 var editedTextbox = e.EditingElement as TextBox;
                 var editedText = editedTextbox.Text;
 
-               
+                Mouse.OverrideCursor = Cursors.Wait;
                 var res = queryHandler.HandleQuery($"SELECT pd.barcode,pd.itemid,pd.variantid,pd.mrp,CONCAT(i.name,' ',iv.name) as item, CASE WHEN td.cgstrate IS NULL THEN 0 ELSE td.cgstrate END, CASE WHEN td.sgstrate IS NULL THEN 0 ELSE td.sgstrate END FROM public.purchaseitemdetails pd LEFT JOIN items i ON pd.itemid = i.id LEFT JOIN itemvariants iv ON pd.variantid = iv.id LEFT JOIN taxes t ON i.taxid = t.id LEFT JOIN taxdetails td ON t.id = td.taxid AND td.type= 'E' AND (pd.mrp between td.ratefrom AND td.rateto ) WHERE pd.barcode='{editedText}'", "select");
-               
-           
+                Mouse.OverrideCursor = null;
+    
+                if (res!=null && res.HasValues)
+                {
 
-                    if (res.HasValues)
-                    {
-                        datagriditems[e.Row.GetIndex()].Id = res[0]["variantid"].ToString();
-                        datagriditems[e.Row.GetIndex()].ItemName = res[0]["item"].ToString();
-                        datagriditems[e.Row.GetIndex()].Barcode = res[0]["barcode"].ToString();
-                        datagriditems[e.Row.GetIndex()].Mrp = res[0]["mrp"].ToString();
-                        datagriditems[e.Row.GetIndex()].Discount = "0";
-                        datagriditems[e.Row.GetIndex()].Cgst = "0";
-                        datagriditems[e.Row.GetIndex()].Sgst = "0";
-                        datagriditems[e.Row.GetIndex()].Details = "";
-                        datagriditems[e.Row.GetIndex()].CgstDetails = res[0]["cgstrate"].ToString();
-                        datagriditems[e.Row.GetIndex()].SgstDetails = res[0]["sgstrate"].ToString();
-                        datagriditems[e.Row.GetIndex()].DiscountDetails = "0";
-                        datagriditems[e.Row.GetIndex()].Salesman = "";
+                    row.No = e.Row.GetIndex().ToString();
+                    row.ItemName = res[0]["item"].ToString();
+                    row.Barcode = res[0]["barcode"].ToString();
+                    row.ItemId = res[0]["itemid"].ToString();
+                    row.VariantId = res[0]["variantid"].ToString();
+                    row.Mrp = String.IsNullOrEmpty(res[0]["mrp"].ToString()) ? "0" : res[0]["mrp"].ToString();
+                    row.Cgst = "0";
+                    row.Sgst = "0";
+                    row.CgstDetails = res[0]["cgstrate"].ToString();
+                    row.SgstDetails = res[0]["sgstrate"].ToString();
+                    //SubWindows.OfferSection offersection = new SubWindows.OfferSection();
+                    //offersection.ShowDialog();
+                    InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[e.Row.GetIndex()], InsideDatagrid.Columns[3]);
+                    InsideDatagrid.BeginEdit();
+                    editedTextbox.Text = editedTextbox.Text;
 
-                        CalculateTotals();
-
-                        InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[e.Row.GetIndex()], InsideDatagrid.Columns[3]);
-                        InsideDatagrid.BeginEdit();
-                        editedTextbox.Text = editedTextbox.Text;
-
-
-                    }
-                    else
-                    {
-                        e.Cancel = true;
-                        datagriditems[e.Row.GetIndex()].InvalidBarcode = true;
-                        InsideDatagrid.BeginEdit();
-                        editedTextbox.Text = editedTextbox.Text;
-
-                        InsideDatagrid.BeginEdit();
-                        var row = (DataGridRow)InsideDatagrid.ItemContainerGenerator.ContainerFromItem(InsideDatagrid.CurrentItem);
-                        var txt = InsideDatagrid.Columns[1].GetCellContent(row) as TextBox;
-                        err.Trigger(txt, "Invalid Barcode");
-                    }
+                }
+                else
+                {
+                    datagriditems[e.Row.GetIndex()].InvalidBarcode = true;
+                    editedTextbox.Text = editedText;
+                    e.Cancel = true;
+                }
                
             }
             else if (e.Column.Header.ToString() == "Qty")
             {
-                datagriditems[e.Row.GetIndex()].Amount = "65";
-                datagriditems[e.Row.GetIndex()].CgstDetails = "55";
-                datagriditems[e.Row.GetIndex()].SgstDetails = "45";
+                var editedTextbox = e.EditingElement as TextBox;
+                var editedText = editedTextbox.Text;
+                if (string.IsNullOrWhiteSpace(editedText))
+                {
+                    datagriditems[e.Row.GetIndex()].Qty = "";
+                    e.Cancel = true;
+                }
+                else if (!editedText.All(c => char.IsDigit(c)))
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    row.Qty = Math.Round(Convert.ToDouble(editedText)).ToString();
+                    row.Cgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.CgstDetails) / 100)), 2).ToString();
+                    row.Sgst = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) * (Convert.ToDouble(row.SgstDetails) / 100)), 2).ToString();
+                    row.Amount = Math.Round((Convert.ToDouble(row.Qty) * Convert.ToDouble(row.Mrp) + Convert.ToDouble(row.Cgst) + Convert.ToDouble(row.Sgst)), 2).ToString();
+                    CalculateTotals();
 
-                //var editedTextbox = e.EditingElement as TextBox;
-                //var editedText = editedTextbox.Text;
-                //if (string.IsNullOrWhiteSpace(editedText) || string.IsNullOrEmpty(datagriditems[e.Row.GetIndex()].Barcode))
-                //{
-                //    e.Cancel = true;
-                //}
-                //else
-                //{
-                //    if (datagriditems.Count == e.Row.GetIndex() + 1)
-                //    {
-                //        datagriditems.Add(new Models.TableDataStructure());
-                //    }
-                //    CalculateTotals();
-                //    InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[e.Row.GetIndex()], InsideDatagrid.Columns[9]);
-                //    InsideDatagrid.BeginEdit();
-                //}
-
+                    if (datagriditems.Count == e.Row.GetIndex() + 1)
+                    {
+                        datagriditems.Add(new Models.TableDataStructure());
+                    }
+                  
+                }
             }
             //else if (e.Column.Header.ToString() == "Salesman")
             //{
@@ -293,5 +298,7 @@ namespace MainMaterialApp.Masters.SalesB2C
         {
             TotalScroll.ScrollToHorizontalOffset(e.NewValue);
         }
+
+
     }
 }

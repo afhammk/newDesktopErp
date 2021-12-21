@@ -46,7 +46,7 @@ namespace MainMaterialApp.Masters.SalesB2B
             PartySelectbox.ItemsSource = partiesOptions;
             InvoiceNoNumericField.DataContext = basicinfo;
             InvoiceDatePicker.DataContext = basicinfo;
-            PartySelectbox.DataContext = basicinfo;        
+            PartySelectbox.DataContext = basicinfo;      
 
         }
 
@@ -116,8 +116,11 @@ namespace MainMaterialApp.Masters.SalesB2B
                 }
                 else
                 {
+                    
+                    datagriditems[e.Row.GetIndex()].InvalidBarcode = true;
+                    editedTextbox.Text = editedText;
                     e.Cancel = true;
-                    err.Trigger(editedTextbox, "Barcode not found");
+                    
                 }
 
             }
@@ -151,9 +154,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                     //B2BDatagrid.BeginEdit();
                     //editedTextbox.Text = editedTextbox.Text;
                 }
-
             }
-
         }
 
 

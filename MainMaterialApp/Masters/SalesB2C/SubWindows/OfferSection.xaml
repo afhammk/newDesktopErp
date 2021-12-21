@@ -1,0 +1,12 @@
+﻿<Window x:Class="MainMaterialApp.Masters.SalesB2C.SubWindows.OfferSection"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MainMaterialApp.Masters.SalesB2C.SubWindows"
+        mc:Ignorable="d"
+        Title="OfferSection" Height="350" Width="400">
+    <Grid>
+        <TextBlock Text="Offer" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+    </Grid>
+</Window>

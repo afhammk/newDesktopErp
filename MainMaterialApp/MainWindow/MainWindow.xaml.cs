@@ -28,20 +28,20 @@ namespace MainMaterialApp.MainWindow
         {
             InitializeComponent();
 
-            var x = new ContentControl() { Content = new Masters.SalesB2B.SalesB2B(), Style = null };
-            DocumentContainer.SetHeader(x, "Sales b2b");
+            var x = new ContentControl() { Content = new Masters.SalesB2C.SalesB2C(), Style = null };
+            DocumentContainer.SetHeader(x, "Sales b2c");
             DocCont.Items.Add(x);
-            
 
-            //DispatcherTimer timer = new DispatcherTimer();
-            //timer.Interval = TimeSpan.FromSeconds(1);
-            //timer.Tick += timer_Tick;
-            //timer.Start();
+
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
+            timer.Start();
         }
-        //void timer_Tick(object sender, EventArgs e)
-        //{
-        //    Timer.Text = DateTime.Now.ToString();
-        //}
+        void timer_Tick(object sender, EventArgs e)
+        {
+            Timer.Text = DateTime.Now.ToString();
+        }
 
 
         private void MenuBtn_Click(object sender, RoutedEventArgs e)

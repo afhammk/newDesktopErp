@@ -9,11 +9,31 @@ using System.Text;
 
 namespace MainMaterialApp.Masters.SalesB2C.Models
 {
-    public class TableDataStructure : INotifyPropertyChanged, IDataErrorInfo
+    public class TableDataStructure : INotifyPropertyChanged, INotifyDataErrorInfo
     {
        
         public event PropertyChangedEventHandler PropertyChanged;
-        
+        private string itemid { get; set; }
+        public string ItemId
+        {
+            get { return itemid; }
+            set
+            {
+                itemid = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string variantid { get; set; }
+        public string VariantId
+        {
+            get { return variantid; }
+            set
+            {
+                variantid = value;
+                OnPropertyChanged();
+            }
+        }
 
 
         private string id { get; set; }
@@ -114,12 +134,7 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             {
                 qty = value;          
                 OnPropertyChanged("Qty");
-                //OnPropertyChanged("Amount");
-                //OnPropertyChanged("CgstDetails");
-                //OnPropertyChanged("TotalQuantity");
-                //OnPropertyChanged("TotalAmount");
-                //OnPropertyChanged("TotalMrp");
-
+           
             }
         }
 
@@ -193,7 +208,7 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
       
 
         public bool datachanged = false;
-        protected void OnPropertyChanged(string name)
+        protected void OnPropertyChanged(string name=null)
         {
             datachanged = true;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -204,54 +219,67 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
 
         /*----------------------------Error Validation---------------------------------*/
 
-        public bool InvalidBarcode = false;
-       
+        public bool InvalidBarcode { get; set; }
 
-        public string Error
+
+
+        private Dictionary<string, List<string>> propertyErrors = new Dictionary<string, List<string>>();
+
+        public bool HasErrors => propertyErrors.Any();
+
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        public IEnumerable GetErrors(string propertyName)
         {
-            get
+            return propertyErrors.ContainsKey(propertyName) ?
+                propertyErrors[propertyName] : null;
+        }
+
+        private void OnErrorsChanged(string propertyName)
+        {
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        public void ValidateQty()
+        {
+            ClearErrors(nameof(Qty));
+            if (string.IsNullOrWhiteSpace(Qty))
+                AddError(nameof(Qty), "Qty cannot be empty.");
+            else if (Qty != null && !Qty.All(c => char.IsDigit(c)))
+                AddError(nameof(Qty), "Qty only numbers");
+            else if (Convert.ToDouble(Qty) < 1)
+                AddError(nameof(Qty), "Qty atleast 1");
+        }
+        public void ValidateBarcode()
+        {
+            ClearErrors(nameof(Barcode));
+            if (string.IsNullOrWhiteSpace(Barcode))
+                AddError(nameof(Barcode), "Barcode cannot be empty.");
+            else if (InvalidBarcode == true)
             {
-                return string.Empty;
+                InvalidBarcode = false;
+                AddError(nameof(Barcode), " Barcode Invalid");
             }
         }
 
-        public string this[string propertyName]
+        private void AddError(string propertyName, string error)
         {
-            get
+            if (!propertyErrors.ContainsKey(propertyName))
+                propertyErrors[propertyName] = new List<string>();
+
+            if (!propertyErrors[propertyName].Contains(error))
             {
-                return GetErrorForProperty(propertyName);
+                propertyErrors[propertyName].Add(error);
+                OnErrorsChanged(propertyName);
             }
         }
 
-        private string GetErrorForProperty(string propertyName)
+        private void ClearErrors(string propertyName)
         {
-            switch (propertyName)
+            if (propertyErrors.ContainsKey(propertyName))
             {
-                case "Barcode":
-                    if (String.IsNullOrWhiteSpace(Barcode) && datachanged)
-                    {
-                        return "Barcode is empty";
-                    } 
-                    else if(InvalidBarcode == true)
-                    {
-                        InvalidBarcode = false;
-                        return "Invalid Barcode";
-                    }
-                    else
-                    {
-                        return string.Empty;
-                    }
-                case "InvalidBarcode":
-                    if (InvalidBarcode==true)
-                    {
-                        return "Barcode is Invalid";
-                    }
-                    else
-                    {
-                        return string.Empty;
-                    }
-                default:
-                    return string.Empty;
+                propertyErrors.Remove(propertyName);
+                OnErrorsChanged(propertyName);
             }
         }
 
