@@ -46,12 +46,20 @@ namespace MainMaterialApp.Masters.SalesB2B
             PartySelectbox.ItemsSource = partiesOptions;
             InvoiceNoNumericField.DataContext = basicinfo;
             InvoiceDatePicker.DataContext = basicinfo;
-            PartySelectbox.DataContext = basicinfo;      
+            PartySelectbox.DataContext = basicinfo;
+
+
+
+            datagriditems.Add(new Models.TableDataStructure());
+
+
+            //basicinfo.InvoiceNo = 23;
 
         }
 
         private void screen_Loaded(object sender, RoutedEventArgs e)
         {
+
             setInvoiceNo();
             void setInvoiceNo()
             {
@@ -62,7 +70,6 @@ namespace MainMaterialApp.Masters.SalesB2B
                     basicinfo.InvoiceNo = Convert.ToDouble(invoiceNoResponse[0]["invno"].ToString());
                 }
             }
-
 
             setPartyOptions();
             void setPartyOptions()
@@ -76,7 +83,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                     }
                 }
             }
-            datagriditems.Add(new Models.TableDataStructure());
+
         }
 
 
@@ -261,7 +268,7 @@ namespace MainMaterialApp.Masters.SalesB2B
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            
+
             if (basicinfo.PartySelected == null)
             {
                 basicinfo.PartySelected = null;
@@ -272,7 +279,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                 MessageBox.Show("add atleast one row");
                 return;
             }
-            foreach(var item in datagriditems)
+            foreach (var item in datagriditems)
             {
                 if (item.HasErrors.ToString() == "True")
                 {
@@ -280,7 +287,7 @@ namespace MainMaterialApp.Masters.SalesB2B
                     return;
                 }
             }
-         
+
 
             var partyid = PartySelectbox.SelectedItem as Models.PartyModel;
             var partyidstring = partyid.Id.ToString();

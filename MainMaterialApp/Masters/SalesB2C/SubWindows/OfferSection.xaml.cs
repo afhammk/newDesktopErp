@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,9 +19,26 @@ namespace MainMaterialApp.Masters.SalesB2C.SubWindows
     /// </summary>
     public partial class OfferSection : Window
     {
-        public OfferSection()
+        private JArray response;
+        ObservableCollection<Offers> offerlist = new ObservableCollection<Offers>();
+        public OfferSection(JArray res1)
         {
             InitializeComponent();
+            this.response = res1;
+            OffersListBox.ItemsSource = offerlist;
+            
+            foreach (var item in res1)
+            {
+                //offerslist.add(item[0]["id"]
+                offerlist.Add(new Offers() { id = item["id"].ToString(), name = item["name"].ToString()});
+            }
         }
+    }
+
+
+    class Offers
+    {
+        public string id { get; set; }
+        public string name { get; set; }
     }
 }

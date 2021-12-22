@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -110,7 +111,7 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             set
             {
                 barcode = value;
-               
+                ValidateBarcode();
                 OnPropertyChanged("Barcode");
             }
         }
@@ -132,7 +133,8 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             get { return qty; }
             set
             {
-                qty = value;          
+                qty = value;
+                ValidateQty();
                 OnPropertyChanged("Qty");
            
             }
@@ -190,6 +192,17 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             {
                 amount = value;
                 OnPropertyChanged("Amount");
+            }
+
+        }
+        private JArray offers;
+        public JArray Offers
+        {
+            get { return offers; }
+            set
+            {
+                offers = value;
+                OnPropertyChanged("Offers");
             }
 
         }

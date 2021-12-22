@@ -47,6 +47,7 @@ namespace MainMaterialApp.Masters.SalesB2C
             obj2.Add("shameel");
             DgSalesmanColumn.ItemsSource = obj2;
 
+            datagriditems.Add(new Models.TableDataStructure());
 
         }
         private void Screen_Loaded(object sender, RoutedEventArgs e)
@@ -62,7 +63,6 @@ namespace MainMaterialApp.Masters.SalesB2C
             //    }
             //}
 
-            datagriditems.Add(new Models.TableDataStructure());
         }
 
 
@@ -124,11 +124,20 @@ namespace MainMaterialApp.Masters.SalesB2C
                     row.Sgst = "0";
                     row.CgstDetails = res[0]["cgstrate"].ToString();
                     row.SgstDetails = res[0]["sgstrate"].ToString();
-                    //SubWindows.OfferSection offersection = new SubWindows.OfferSection();
-                    //offersection.ShowDialog();
-                    InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[e.Row.GetIndex()], InsideDatagrid.Columns[3]);
-                    InsideDatagrid.BeginEdit();
-                    editedTextbox.Text = editedTextbox.Text;
+
+                    var getOffersQuery = queryHandler.HandleQuery($"SELECT og.id, og.name FROM public.offer_groups og LEFT JOIN offer_on_barcodes ob ON og.id = ob.offer_group_id WHERE og.deletedat IS NULL AND ob.barcode= '{editedText}';", "select");
+                    if(getOffersQuery!=null && getOffersQuery.HasValues)
+                    {
+                        var offerConditionsQuery = queryHandler.HandleQuery($"SELECT o.id, o.group_id, o.value , gd.value as offvalue, gd.applying_mrp, gd.applicable_quantity, gd.max_discount_amount,CASE WHEN o.type = 's' THEN 'SHOP FOR' ELSE 'BUY' END as type, CASE WHEN o.get_type = 'f' THEN 'FLAT' WHEN o.get_type = 'p' THEN 'PERCENTAGE' ELSE 'BARCODE' END as get_type,(SELECT json_agg(t) FROM(select oo.id, (select array( SELECT ib.barcode FROM offer_cart_include_barcodes ib WHERE ib.offer_id = oo.id )) as barcodes,( select array( SELECT ibd.brand_id FROM offer_cart_include_brands ibd WHERE ibd.offer_id = oo.id )) as brands,(select array( SELECT ic.category_id FROM offer_cart_include_categories ic WHERE ic.offer_id = oo.id)) as categories,(select array( SELECT iv.vendor_id FROM offer_cart_include_vendors iv WHERE iv.offer_id = oo.id )) as vendors,( SELECT json_agg(m) FROM(SELECT im.mrp_from, im.mrp_to FROM offer_cart_include_mrp im WHERE im.offer_id = oo.id) m) as mrp from offers oo WHERE oo.id = o.id) t) as conditions FROM public.offers o LEFT JOIN offer_groups og ON o.group_id = og.id LEFT JOIN offer_get_discount gd ON o.id = gd.offer_id WHERE o.deletedat IS NULL AND og.deletedat IS NULL AND og.id = '4';","select");
+                        SubWindows.OfferSection offersection = new SubWindows.OfferSection(getOffersQuery);
+                        offersection.ShowDialog();
+                    }
+
+                    
+
+                    //InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[e.Row.GetIndex()], InsideDatagrid.Columns[3]);
+                    //InsideDatagrid.BeginEdit();
+                    //editedTextbox.Text = editedTextbox.Text;
 
                 }
                 else

@@ -29,7 +29,7 @@ namespace MainMaterialApp.MainWindow
             InitializeComponent();
 
             var x = new ContentControl() { Content = new Masters.SalesB2C.SalesB2C(), Style = null };
-            DocumentContainer.SetHeader(x, "Sales b2c");
+            DocumentContainer.SetHeader(x, "Sales b2b");
             DocCont.Items.Add(x);
 
 

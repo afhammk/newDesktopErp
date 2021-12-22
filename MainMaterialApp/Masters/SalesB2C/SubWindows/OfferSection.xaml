@@ -3,10 +3,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        
         xmlns:local="clr-namespace:MainMaterialApp.Masters.SalesB2C.SubWindows"
         mc:Ignorable="d"
-        Title="OfferSection" Height="350" Width="400">
-    <Grid>
-        <TextBlock Text="Offer" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+        Title="OfferSection" Height="350" Width="300">
+    <Grid Margin="50">
+        <StackPanel Orientation="Vertical">
+            <ListBox x:Name="OffersListBox" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding name}"></CheckBox>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Content="SAVE"></Button>
+        </StackPanel>
     </Grid>
 </Window>
