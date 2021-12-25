@@ -19,8 +19,6 @@ using System.Windows.Shapes;
 namespace MainMaterialApp.Masters.SalesB2B
 {
 
-    
-    
     public partial class SalesB2B : UserControl
     {
         string branchid = "1";
@@ -48,12 +46,8 @@ namespace MainMaterialApp.Masters.SalesB2B
             InvoiceDatePicker.DataContext = basicinfo;
             PartySelectbox.DataContext = basicinfo;
 
-
-
             datagriditems.Add(new Models.TableDataStructure());
 
-
-            //basicinfo.InvoiceNo = 23;
 
         }
 
@@ -183,6 +177,7 @@ namespace MainMaterialApp.Masters.SalesB2B
             }
         }
 
+
         private void InvoiceNoNumericField_ValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
       
@@ -265,6 +260,7 @@ namespace MainMaterialApp.Masters.SalesB2B
             datagriditems[B2BDatagrid.SelectedIndex].Salesman = y.Content.ToString();
             B2BDatagrid.CommitEdit();
         }
+
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
@@ -381,5 +377,12 @@ namespace MainMaterialApp.Masters.SalesB2B
             totals.TotalSgst = Math.Round(Convert.ToDouble(totalsgst), 2).ToString();
             totals.TotalAmount = Math.Round(Convert.ToDouble(totalamount), 2).ToString();
         }
+
+        private void ScrollBar_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+        {
+            TotalScroll.ScrollToHorizontalOffset(e.NewValue);
+        }
+
+
     }
 }

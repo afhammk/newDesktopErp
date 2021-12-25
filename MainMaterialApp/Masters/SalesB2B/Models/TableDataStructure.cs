@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -208,7 +209,9 @@ namespace MainMaterialApp.Masters.SalesB2B.Models
                 amount = value;
                 OnPropertyChanged("Amount");
             }
+
         }
+       
         private string salesman;
         public string Salesman
         {

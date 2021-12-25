@@ -20,25 +20,34 @@ namespace MainMaterialApp.Masters.SalesB2C.SubWindows
     public partial class OfferSection : Window
     {
         private JArray response;
-        ObservableCollection<Offers> offerlist = new ObservableCollection<Offers>();
-        public OfferSection(JArray res1)
+        ObservableCollection<Models.Offers> offerlist = new ObservableCollection<Models.Offers>();
+        QueryHandler.QueryHandler queryHandler = new QueryHandler.QueryHandler();
+        Action<string> act;
+
+        public OfferSection(dynamic offers , Action<string> action)
         {
             InitializeComponent();
-            this.response = res1;
-            OffersListBox.ItemsSource = offerlist;
-            
-            foreach (var item in res1)
-            {
-                //offerslist.add(item[0]["id"]
-                offerlist.Add(new Offers() { id = item["id"].ToString(), name = item["name"].ToString()});
-            }
+            this.offerlist = offers;
+            this.act = action;
+            OffersListBox.ItemsSource = offerlist ;     
+           
         }
+
+        string id;
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(var elem in offerlist)
+            {
+                if (elem.isSelected == true)
+                {
+                    this.id = elem.id;
+                }
+            }
+            this.Close();
+            act(id);    
+            return;
+        }
+
     }
 
-
-    class Offers
-    {
-        public string id { get; set; }
-        public string name { get; set; }
-    }
 }

@@ -206,6 +206,26 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             }
 
         }
+        private JArray offerconditions;
+        public JArray OfferConditions
+        {
+            get { return offerconditions; }
+            set
+            {
+                offerconditions = value;
+                OnPropertyChanged();
+            }
+        }
+        private List<JArray> offerconditionsdetails;
+        public List<JArray> OfferConditionsDetails
+        {
+            get { return offerconditionsdetails; }
+            set
+            {
+                offerconditionsdetails = value;
+                OnPropertyChanged();
+            }
+        }
 
         private string salesman ;
         public string Salesman

@@ -7,17 +7,20 @@
         
         xmlns:local="clr-namespace:MainMaterialApp.Masters.SalesB2C.SubWindows"
         mc:Ignorable="d"
-        Title="OfferSection" Height="350" Width="300">
+        Title="OfferSection" Height="350" Width="400">
     <Grid Margin="50">
         <StackPanel Orientation="Vertical">
             <ListBox x:Name="OffersListBox" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <CheckBox Content="{Binding name}"></CheckBox>
+                        <RadioButton Content="{Binding name}" IsChecked="{Binding isSelected,Mode=TwoWay}">
+                          
+                        </RadioButton>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Content="SAVE"></Button>
+            
+            <Button x:Name="Save" Content="SAVE" Click="Save_Click"></Button>
         </StackPanel>
     </Grid>
 </Window>

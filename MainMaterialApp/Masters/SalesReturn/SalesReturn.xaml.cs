@@ -37,8 +37,6 @@ namespace MainMaterialApp.Masters.SalesReturn
             InsideDatagrid.ItemsSource = datagriditems;
             datagriditems.Add(new Models.TableDataStructure());
 
-          
-
            
             obj2.Add("Male");
             obj2.Add("Female");
@@ -138,7 +136,6 @@ namespace MainMaterialApp.Masters.SalesReturn
     {
 
         public event PropertyChangedEventHandler PropertyChanged;
-
 
         private string mobile { get; set; }
         public string Mobile

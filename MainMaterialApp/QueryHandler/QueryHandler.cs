@@ -15,12 +15,12 @@ namespace MainMaterialApp.QueryHandler
 
     class QueryHandler
     {
-        private static String server = "192.168.1.110"; 
-        private static String database = "newerp";
+        private static String server = "localhost"; 
+        private static String database = "DesktopDatabase";
         private static String userId = "postgres";
-        private static String password = "shibin";
+        private static String password = "admin";
 
-        NpgsqlConnection conn = new NpgsqlConnection($"Server={server};Port=5432;Database={database};User Id={userId};Password={password};CommandTimeout=1");
+        NpgsqlConnection conn = new NpgsqlConnection($"Server={server};Port=5432;Database={database};User Id={userId};Password={password};Timeout=3");
         NpgsqlCommand comm = new NpgsqlCommand();
 
         public JArray HandleQuery(string query , string queryType )
@@ -39,6 +39,7 @@ namespace MainMaterialApp.QueryHandler
                 dataTable.Load(dataReader);
                 var y = dataTable;
                 string JSONString = string.Empty;
+          
                 JSONString = JsonConvert.SerializeObject(dataTable);
                 JArray jsonData = JArray.Parse(JSONString);
                 return jsonData;

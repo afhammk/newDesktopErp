@@ -8,5 +8,6 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
     {
         public string id { get; set; }
         public string name { get; set; }
+        public bool isSelected { get; set; }
     }
 }

@@ -15,6 +15,7 @@ using System.Linq;
 namespace MainMaterialApp.Masters.SalesB2C
 {
 
+
     public partial class SalesB2C : UserControl
     {
         string branchid = "1";
@@ -28,7 +29,7 @@ namespace MainMaterialApp.Masters.SalesB2C
         QueryHandler.QueryHandler queryHandler = new QueryHandler.QueryHandler();
         ManualValidationHandler.ManualValidationHandler err = new ManualValidationHandler.ManualValidationHandler();
         Models.TableTotal totals = new Models.TableTotal();
-
+        ObservableCollection<Models.Offers> offerlist = new ObservableCollection<Models.Offers>();
 
              
         public SalesB2C()
@@ -125,12 +126,45 @@ namespace MainMaterialApp.Masters.SalesB2C
                     row.CgstDetails = res[0]["cgstrate"].ToString();
                     row.SgstDetails = res[0]["sgstrate"].ToString();
 
-                    var getOffersQuery = queryHandler.HandleQuery($"SELECT og.id, og.name FROM public.offer_groups og LEFT JOIN offer_on_barcodes ob ON og.id = ob.offer_group_id WHERE og.deletedat IS NULL AND ob.barcode= '{editedText}';", "select");
+                    var getOffersQuery = queryHandler.HandleQuery($"SELECT og.id, og.name FROM public.offer_groups og LEFT JOIN offer_on_barcodes ob ON og.id = ob.offer_group_id WHERE og.deletedat IS NULL AND ob.barcode='C101841';", "select");
                     if(getOffersQuery!=null && getOffersQuery.HasValues)
                     {
-                        var offerConditionsQuery = queryHandler.HandleQuery($"SELECT o.id, o.group_id, o.value , gd.value as offvalue, gd.applying_mrp, gd.applicable_quantity, gd.max_discount_amount,CASE WHEN o.type = 's' THEN 'SHOP FOR' ELSE 'BUY' END as type, CASE WHEN o.get_type = 'f' THEN 'FLAT' WHEN o.get_type = 'p' THEN 'PERCENTAGE' ELSE 'BARCODE' END as get_type,(SELECT json_agg(t) FROM(select oo.id, (select array( SELECT ib.barcode FROM offer_cart_include_barcodes ib WHERE ib.offer_id = oo.id )) as barcodes,( select array( SELECT ibd.brand_id FROM offer_cart_include_brands ibd WHERE ibd.offer_id = oo.id )) as brands,(select array( SELECT ic.category_id FROM offer_cart_include_categories ic WHERE ic.offer_id = oo.id)) as categories,(select array( SELECT iv.vendor_id FROM offer_cart_include_vendors iv WHERE iv.offer_id = oo.id )) as vendors,( SELECT json_agg(m) FROM(SELECT im.mrp_from, im.mrp_to FROM offer_cart_include_mrp im WHERE im.offer_id = oo.id) m) as mrp from offers oo WHERE oo.id = o.id) t) as conditions FROM public.offers o LEFT JOIN offer_groups og ON o.group_id = og.id LEFT JOIN offer_get_discount gd ON o.id = gd.offer_id WHERE o.deletedat IS NULL AND og.deletedat IS NULL AND og.id = '4';","select");
-                        SubWindows.OfferSection offersection = new SubWindows.OfferSection(getOffersQuery);
+                        foreach (var item in getOffersQuery)
+                        {
+                            offerlist.Add(new Models.Offers() { id = item["id"].ToString(), name = item["name"].ToString(), isSelected = false });
+                        }
+                        SubWindows.OfferSection offersection = new SubWindows.OfferSection(offerlist, (id) => getOfferConditions(id));
                         offersection.ShowDialog();
+
+                        void getOfferConditions(string id){
+                            
+                            var listofconditions = new List<JArray>();
+                            var offerConditionsQuery = new JArray();
+                            foreach (var element in offerlist)
+                            {
+                                if (element.isSelected = true)
+                                {
+                                    var res = queryHandler.HandleQuery($"SELECT o.id, o.group_id, o.value , gd.value as offvalue, gd.applying_mrp, gd.applicable_quantity, gd.max_discount_amount,CASE WHEN o.type = 's' THEN 'SHOP FOR' ELSE 'BUY' END as type, CASE WHEN o.get_type = 'f' THEN 'FLAT' WHEN o.get_type = 'p' THEN 'PERCENTAGE' ELSE 'BARCODE' END as get_type,(SELECT json_agg(t) FROM(select oo.id, (select array( SELECT ib.barcode FROM offer_cart_include_barcodes ib WHERE ib.offer_id = oo.id )) as barcodes,( select array( SELECT ibd.brand_id FROM offer_cart_include_brands ibd WHERE ibd.offer_id = oo.id )) as brands,(select array( SELECT ic.category_id FROM offer_cart_include_categories ic WHERE ic.offer_id = oo.id)) as categories,(select array( SELECT iv.vendor_id FROM offer_cart_include_vendors iv WHERE iv.offer_id = oo.id )) as vendors,( SELECT json_agg(m) FROM(SELECT im.mrp_from, im.mrp_to FROM offer_cart_include_mrp im WHERE im.offer_id = oo.id) m) as mrp from offers oo WHERE oo.id = o.id) t) as conditions FROM public.offers o LEFT JOIN offer_groups og ON o.group_id = og.id LEFT JOIN offer_get_discount gd ON o.id = gd.offer_id WHERE o.deletedat IS NULL AND og.deletedat IS NULL AND og.id = '{element.id}';", "jsonInsideJArray");
+                                    offerConditionsQuery = res;
+                                    if (res != null && res.HasValues)
+                                    {
+
+                                        foreach (var conditions in offerConditionsQuery)
+                                        {
+                                            listofconditions.Add(JArray.Parse(conditions["conditions"].ToString()));
+                                        }
+
+                                        //"conditions": "[{\"id\":46,\"barcodes\":[],\"brands\":[],\"categories\":[],\"vendors\":[],\"mrp\":[{\"mrp_from\":7000,\"mrp_to\":12000}]}]"
+
+                                    }
+
+                                }
+
+                            }
+                            row.OfferConditions = offerConditionsQuery;
+                            row.OfferConditionsDetails = listofconditions;
+                        }
+
                     }
 
                     
@@ -221,7 +255,7 @@ namespace MainMaterialApp.Masters.SalesB2C
 
         private void Print_Click(object sender, RoutedEventArgs e)
         {
-
+            var x = datagriditems;
             FlowDocument doc = new FlowDocument();
 
             //Paragraph p = new Paragraph(new Run("Hello, world!"));
