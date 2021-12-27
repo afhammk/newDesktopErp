@@ -153,9 +153,7 @@ namespace MainMaterialApp.Masters.SalesB2C
                                         {
                                             listofconditions.Add(JArray.Parse(conditions["conditions"].ToString()));
                                         }
-
                                         //"conditions": "[{\"id\":46,\"barcodes\":[],\"brands\":[],\"categories\":[],\"vendors\":[],\"mrp\":[{\"mrp_from\":7000,\"mrp_to\":12000}]}]"
-
                                     }
 
                                 }
@@ -166,9 +164,7 @@ namespace MainMaterialApp.Masters.SalesB2C
                         }
 
                     }
-
-                    
-
+         
                     //InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[e.Row.GetIndex()], InsideDatagrid.Columns[3]);
                     //InsideDatagrid.BeginEdit();
                     //editedTextbox.Text = editedTextbox.Text;

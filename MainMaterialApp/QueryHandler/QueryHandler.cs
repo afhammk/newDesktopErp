@@ -15,10 +15,10 @@ namespace MainMaterialApp.QueryHandler
 
     class QueryHandler
     {
-        private static String server = "localhost"; 
-        private static String database = "DesktopDatabase";
+        private static String server = "192.168.1.115"; 
+        private static String database = "newerp";
         private static String userId = "postgres";
-        private static String password = "admin";
+        private static String password = "shibin";
 
         NpgsqlConnection conn = new NpgsqlConnection($"Server={server};Port=5432;Database={database};User Id={userId};Password={password};Timeout=3");
         NpgsqlCommand comm = new NpgsqlCommand();
