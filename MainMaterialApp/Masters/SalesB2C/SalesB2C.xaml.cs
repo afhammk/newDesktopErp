@@ -219,7 +219,7 @@ namespace MainMaterialApp.Masters.SalesB2C
             //{
             //    //InsideDatagrid.CurrentCell = new DataGridCellInfo(InsideDatagrid.Items[datagriditems.Count - 1], InsideDatagrid.Columns[1]);
             //    //InsideDatagrid.BeginEdit();
-            ///}
+            //}
 
         }
 
