@@ -234,7 +234,8 @@ namespace MainMaterialApp.Masters.SalesB2C
                     {
                         bool containsSameOfferId = false;
                         double totalItemAmount = Convert.ToDouble(currentItem.Amount);
-                        double totalCount = Convert.ToDouble(currentItem.Qty);
+                        double totalCount = 1;
+                        var listofindexes = new List<int>();
                         for (int k = 0; k < datagriditems.Count; k++)  //loop to check if same offer id exist in datagrid items
                         {
                             if (i == k)
@@ -245,9 +246,10 @@ namespace MainMaterialApp.Masters.SalesB2C
                             {
                                 if (currentItem.OfferId == datagriditems[k].OfferId)
                                 {
+                                    listofindexes.Add(k);
                                     containsSameOfferId = true;
-                                    totalItemAmount = Convert.ToDouble(datagriditems[k].Amount);
-                                    totalCount= Convert.ToDouble(datagriditems[k].Qty);
+                                    totalItemAmount = totalItemAmount + Convert.ToDouble(datagriditems[k].Amount);
+                                    totalCount++;
                                 }
                             }
                         }
@@ -280,7 +282,8 @@ namespace MainMaterialApp.Masters.SalesB2C
                                 if (brands.HasValues) dict.Add("brands", brands);
                                 if (vendors.HasValues) dict.Add("vendors", vendors);
 
-                                bool isValid = true;
+                                bool isValid = false;
+                                int count = 0;
 
                                 if (dict.Count == 0) // no conditions present in offerconditiondetails
                                 {
@@ -290,39 +293,104 @@ namespace MainMaterialApp.Masters.SalesB2C
                                 {
                                     foreach (var dictitem in dict)
                                     {
-                                        foreach (var value in dictitem.Value)
+                                        if (dictitem.Key == "barcodes")
                                         {
-                                            foreach (var item in datagriditems)
+                                            count = 0;
+                                            foreach (var value in dictitem.Value)
                                             {
-                                                if (dictitem.Key == "barcodes")
+                                                foreach (var item in datagriditems)
                                                 {
-                                                    if (value.ToString() != item.Barcode)
+                                                    if (value.ToString() == item.Barcode)
                                                     {
-                                                        isValid = false;
+                                                        count++;
+                                                        break;
+                                                    }
 
-                                                    }
                                                 }
-                                                else if (dictitem.Key == "categories")
+                                            }
+                                            if (dictitem.Value.Count == count)
+                                            {
+                                                isValid = true;
+                                            }
+                                            else
+                                            {
+                                                isValid = false;
+                                                break;
+                                            }
+                                        }
+                                        else if (dictitem.Key == "categories")
+                                        {
+                                            count = 0;
+                                            foreach (var value in dictitem.Value)
+                                            {
+                                                foreach (var item in datagriditems)
                                                 {
-                                                    if (value.ToString() != item.CategoryId)
+                                                    if (value.ToString() == item.CategoryId)
                                                     {
-                                                        isValid = false;
+                                                        count++;
+                                                        break;
                                                     }
+
                                                 }
-                                                else if (dictitem.Key == "brands")
+                                            }
+                                            if (dictitem.Value.Count == count)
+                                            {
+                                                isValid = true;
+                                            }
+                                            else
+                                            {
+                                                isValid = false;
+                                                break;
+                                            }
+                                        }
+                                        else if (dictitem.Key == "brands")
+                                        {
+                                            count = 0;
+                                            foreach (var value in dictitem.Value)
+                                            {
+                                                foreach (var item in datagriditems)
                                                 {
-                                                    if (value.ToString() != item.BrandId)
+                                                    if (value.ToString() == item.BrandId)
                                                     {
-                                                        isValid = false;
+                                                        count++;
+                                                        break;
                                                     }
+
                                                 }
-                                                else //dictitem.Key == "vendors"
+                                            }
+                                            if (dictitem.Value.Count == count)
+                                            {
+                                                isValid = true;
+                                            }
+                                            else
+                                            {
+                                                isValid = false;
+                                                break;
+                                            }
+                                        }
+                                        else //dictitem.Key == "vendors"
+                                        {
+                                            count = 0;
+                                            foreach (var value in dictitem.Value)
+                                            {
+                                                foreach (var item in datagriditems)
                                                 {
-                                                    if (value.ToString() != item.SupplierId)
+                                                    if (value.ToString() == item.SupplierId)
                                                     {
-                                                        isValid = false;
+                                                        count++;
+                                                        break;
                                                     }
+
                                                 }
+                                            }
+                                            if (dictitem.Value.Count == count)
+                                            {
+                                                isValid = true;
+                                            }
+                                            else
+                                            {
+                                                isValid = false;
+                                                break;
                                             }
                                         }
                                     }
@@ -331,11 +399,15 @@ namespace MainMaterialApp.Masters.SalesB2C
                                 if (isValid == true)
                                 {
                                     currentItem.Discount =  (selectedOffer[selectedOfferConditionIndex]["offvalue"].ToObject<double>() / totalCount).ToString(); // set discount
-                                    MessageBox.Show("discount valid");
+                                    foreach(var index in listofindexes)
+                                    {
+                                        datagriditems[index].Discount = (selectedOffer[selectedOfferConditionIndex]["offvalue"].ToObject<double>() / totalCount).ToString();
+                                    }
+                                    //MessageBox.Show("discount valid");
                                 }
                                 else
                                 {
-                                    MessageBox.Show("discount not valid");
+                                   // MessageBox.Show("discount not valid");
                                 }
 
                             }
@@ -486,11 +558,11 @@ namespace MainMaterialApp.Masters.SalesB2C
                                 if (isValid == true)
                                 {
                                     currentItem.Discount = (selectedOffer[selectedOfferConditionIndex]["offvalue"].ToString()); // set discount
-                                    MessageBox.Show("discount valid");
+                                    //MessageBox.Show("discount valid");
                                 }
                                 else
                                 {
-                                    MessageBox.Show("discount not valid");
+                                   // MessageBox.Show("discount not valid");
                                 }
 
                             }
@@ -634,7 +706,5 @@ namespace MainMaterialApp.Masters.SalesB2C
         {
             TotalScroll.ScrollToHorizontalOffset(e.NewValue);
         }
-
-
     }
 }
