@@ -160,7 +160,33 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
                 OnPropertyChanged("Discount");
             }
         }
-
+        private string brandid;
+        public string BrandId
+        {
+            get { return brandid; }
+            set
+            {
+                brandid = value;
+            }
+        }
+        private string categoryid;
+        public string CategoryId
+        {
+            get { return categoryid; }
+            set
+            {
+                categoryid = value;
+            }
+        }
+        private string supplierid;
+        public string SupplierId
+        {
+            get { return supplierid; }
+            set
+            {
+                supplierid = value;
+            }
+        }
         private string cgst ;
         public string Cgst
         {
@@ -206,6 +232,16 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
             }
 
         }
+        private string offerid;
+        public string OfferId
+        {
+            get { return offerid; }
+            set
+            {
+                offerid = value;
+                OnPropertyChanged();
+            }
+        }
         private JArray offerconditions;
         public JArray OfferConditions
         {
@@ -226,6 +262,7 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
                 OnPropertyChanged();
             }
         }
+        public bool isBarcodeBasedOffer { get; set; }
 
         private string salesman ;
         public string Salesman
@@ -240,10 +277,10 @@ namespace MainMaterialApp.Masters.SalesB2C.Models
 
       
 
-        public bool datachanged = false;
+        //public bool datachanged = false;
         protected void OnPropertyChanged(string name=null)
         {
-            datachanged = true;
+            //datachanged = true;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 

@@ -15,7 +15,7 @@ namespace MainMaterialApp.QueryHandler
 
     class QueryHandler
     {
-        private static String server = "192.168.1.115"; 
+        private static String server = "192.168.1.117"; 
         private static String database = "newerp";
         private static String userId = "postgres";
         private static String password = "shibin";

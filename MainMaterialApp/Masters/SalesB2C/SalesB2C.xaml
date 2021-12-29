@@ -232,7 +232,7 @@
                         </DataGrid.Resources>
                         <DataGrid.Columns >
 
-                            <DataGridTextColumn x:Name="DgIdColumn" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Header="Id" Width="50" Binding= "{Binding Path=Id, Mode=TwoWay  , UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                            <DataGridTextColumn x:Name="DgIdColumn" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Header="Id" Width="50" Binding= "{Binding Path=No, Mode=TwoWay  , UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                             <DataGridTextColumn x:Name="DgBarcodeColumn"  EditingElementStyle="{StaticResource editingElement}"  ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Barcode" Binding= "{Binding Path=Barcode, Mode=TwoWay , ValidatesOnNotifyDataErrors=True , UpdateSourceTrigger=PropertyChanged}" MinWidth="100" />
                             <DataGridTextColumn x:Name="DgItemColumn" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Item" Binding= "{Binding Path=ItemName, Mode=TwoWay , UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" MinWidth="100"/>
                             <DataGridTextColumn x:Name="DgQtyColumn" ElementStyle="{StaticResource Cnt}" HeaderStyle="{StaticResource Hdr}"  Width="*" Header="Qty" Binding= "{Binding Path=Qty, Mode=TwoWay, ValidatesOnNotifyDataErrors=True , UpdateSourceTrigger=PropertyChanged}" MinWidth="100" />

@@ -54,29 +54,29 @@ namespace MainMaterialApp.Masters.SalesB2B
         private void screen_Loaded(object sender, RoutedEventArgs e)
         {
 
-            setInvoiceNo();
-            void setInvoiceNo()
-            {
-                var invoiceNoResponse = queryHandler.HandleQuery("SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1", "select");
-                if (invoiceNoResponse != null && invoiceNoResponse.HasValues)
-                {
-                    status = "1";
-                    basicinfo.InvoiceNo = Convert.ToDouble(invoiceNoResponse[0]["invno"].ToString());
-                }
-            }
+            //setInvoiceNo();
+            //void setInvoiceNo()
+            //{
+            //    var invoiceNoResponse = queryHandler.HandleQuery("SELECT MAX(invoiceno + 1) as invno FROM public.salesinvoices WHERE invoicetype = 'BB' LIMIT 1", "select");
+            //    if (invoiceNoResponse != null && invoiceNoResponse.HasValues)
+            //    {
+            //        status = "1";
+            //        basicinfo.InvoiceNo = Convert.ToDouble(invoiceNoResponse[0]["invno"].ToString());
+            //    }
+            //}
 
-            setPartyOptions();
-            void setPartyOptions()
-            {
-                var response = queryHandler.HandleQuery("SELECT id,name,stateid FROM public.suppliers WHERE deletedat IS NULL", "select");
-                if (response != null && response.HasValues)
-                {
-                    foreach (var item in response)
-                    {
-                        partiesOptions.Add(new Models.PartyModel() { Id = item["id"].ToString(), Name = item["name"].ToString(), StateId = item["stateid"].ToString() });
-                    }
-                }
-            }
+            //setPartyOptions();
+            //void setPartyOptions()
+            //{
+            //    var response = queryHandler.HandleQuery("SELECT id,name,stateid FROM public.suppliers WHERE deletedat IS NULL", "select");
+            //    if (response != null && response.HasValues)
+            //    {
+            //        foreach (var item in response)
+            //        {
+            //            partiesOptions.Add(new Models.PartyModel() { Id = item["id"].ToString(), Name = item["name"].ToString(), StateId = item["stateid"].ToString() });
+            //        }
+            //    }
+            //}
 
         }
 
